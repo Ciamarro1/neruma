@@ -1,0 +1,366 @@
+version: '3.8'
+
+# ==============================================================================
+# NERUMA PRODUCTION DOCKER COMPOSE (DEFINITIVE 4-TIER NETWORK ARCHITECTURE)
+# ==============================================================================
+
+networks:
+  neruma_edge:
+    name: neruma_edge
+    driver: bridge
+  neruma_app:
+    name: neruma_app
+    driver: bridge
+  neruma_data:
+    name: neruma_data
+    driver: bridge
+  neruma_ops:
+    name: neruma_ops
+    driver: bridge
+
+volumes:
+  traefik_acme:
+  postgres_data:
+  valkey_data:
+  seaweedfs_data:
+  typesense_data:
+  uptime_data:
+
+services:
+  # ============================================================================
+  # 1. EDGE: REVERSE PROXY, TLS & ROUTING (Traefik v3)
+  # ============================================================================
+  traefik:
+    image: traefik:v3.1
+    container_name: neruma_traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - traefik_acme:/letsencrypt
+    networks:
+      - neruma_edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.middlewares=admin-auth@file"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 150M
+
+  # ============================================================================
+  # 2. DATA: POSTGRESQL 16 (ISOLATED USERS & DATABASES)
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: neruma_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_ROOT_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD:-neruma_super_secret_pg_root_2026}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - neruma_data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_ROOT_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1500M
+
+  # ============================================================================
+  # 3. DATA: VALKEY (REDIS DROP-IN, BSD-3 LICENSE)
+  # ============================================================================
+  valkey:
+    image: valkey/valkey:7.2-alpine
+    container_name: neruma_valkey
+    restart: always
+    command: valkey-server --save 60 1 --loglevel warning --requirepass "${VALKEY_PASSWORD:-neruma_valkey_secret_2026}"
+    volumes:
+      - valkey_data:/data
+    networks:
+      - neruma_data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "-a", "${VALKEY_PASSWORD:-neruma_valkey_secret_2026}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ============================================================================
+  # 4. DATA: SEARCH ENGINE (Typesense - Lean C++ Core)
+  # ============================================================================
+  typesense:
+    image: typesense/typesense:27.1
+    container_name: neruma_typesense
+    restart: always
+    environment:
+      TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:-neruma_typesense_secret_key_123}
+      TYPESENSE_DATA_DIR: /data
+      TYPESENSE_ENABLE_CORS: "true"
+    volumes:
+      - typesense_data:/data
+    networks:
+      - neruma_data
+      - neruma_edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.typesense.rule=Host(`search.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.typesense.entrypoints=websecure"
+      - "traefik.http.routers.typesense.tls.certresolver=letsencrypt"
+      - "traefik.http.services.typesense.loadbalancer.server.port=8108"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 400M
+
+  # ============================================================================
+  # 5. DATA: OBJECT STORAGE S3 (SeaweedFS - Apache 2.0)
+  # ============================================================================
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: neruma_seaweedfs
+    restart: always
+    command: "server -dir=/data -s3 -filer -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json"
+    volumes:
+      - seaweedfs_data:/data
+      - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+    networks:
+      - neruma_data
+      - neruma_edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.s3.rule=Host(`assets.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.s3.entrypoints=websecure"
+      - "traefik.http.routers.s3.tls.certresolver=letsencrypt"
+      - "traefik.http.services.s3.loadbalancer.server.port=8333"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 400M
+
+  # ============================================================================
+  # 6. APP: COMMERCE ENGINE (Medusa v2 API & Admin)
+  # ============================================================================
+  medusa:
+    build:
+      context: ../apps/commerce
+      dockerfile: ../../infra/docker/Dockerfile.commerce
+    container_name: neruma_medusa
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${MEDUSA_DB_USER:-medusa_user}:${MEDUSA_DB_PASSWORD:-medusa_db_secret_password_2026}@postgres:5432/medusa_db
+      REDIS_URL: redis://:${VALKEY_PASSWORD:-neruma_valkey_secret_2026}@valkey:6379
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_neruma_at_least_32_characters}
+      COOKIE_SECRET: ${COOKIE_SECRET:-super_secret_cookie_key_neruma_at_least_32_chars}
+      MEDUSA_BACKEND_URL: https://api.${DOMAIN:-neruma.com.br}
+      STORE_CORS: https://${DOMAIN:-neruma.com.br},https://shop.${DOMAIN:-neruma.com.br}
+      ADMIN_CORS: https://admin.${DOMAIN:-neruma.com.br}
+      AUTH_CORS: https://${DOMAIN:-neruma.com.br},https://shop.${DOMAIN:-neruma.com.br},https://admin.${DOMAIN:-neruma.com.br}
+      S3_URL: http://seaweedfs:8333
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-neruma_seaweed_admin_key}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-neruma_seaweed_secret_key_prod_2026}
+      S3_BUCKET: neruma-products
+      S3_ENDPOINT: https://assets.${DOMAIN:-neruma.com.br}
+    networks:
+      - neruma_app
+      - neruma_data
+      - neruma_edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.medusa-api.rule=Host(`api.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.medusa-api.entrypoints=websecure"
+      - "traefik.http.routers.medusa-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.medusa-api.middlewares=api-ratelimit@file"
+      - "traefik.http.services.medusa-api.loadbalancer.server.port=9000"
+      - "traefik.http.routers.medusa-admin.rule=Host(`admin.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.medusa-admin.entrypoints=websecure"
+      - "traefik.http.routers.medusa-admin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.medusa-admin.loadbalancer.server.port=9000"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1200M
+
+  # ============================================================================
+  # 7. APP: HEADLESS CMS (Payload CMS 3.0)
+  # ============================================================================
+  payload:
+    build:
+      context: ../apps/cms
+      dockerfile: ../../infra/docker/Dockerfile.cms
+    container_name: neruma_payload
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URI: postgresql://${PAYLOAD_DB_USER:-payload_user}:${PAYLOAD_DB_PASSWORD:-payload_db_secret_password_2026}@postgres:5432/payload_db
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-super_secret_payload_cms_key_32_chars_long}
+      S3_ENDPOINT: http://seaweedfs:8333
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-neruma_seaweed_admin_key}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-neruma_seaweed_secret_key_prod_2026}
+      S3_BUCKET: neruma-content
+      PORT: 3001
+    networks:
+      - neruma_app
+      - neruma_data
+      - neruma_edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.payload.rule=Host(`cms.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.payload.entrypoints=websecure"
+      - "traefik.http.routers.payload.tls.certresolver=letsencrypt"
+      - "traefik.http.services.payload.loadbalancer.server.port=3001"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 800M
+
+  # ============================================================================
+  # 8. APP: STOREFRONT (Next.js 14/15 App Router - Editorial & Commerce)
+  # ============================================================================
+  storefront:
+    build:
+      context: ../apps/storefront
+      dockerfile: ../../infra/docker/Dockerfile.storefront
+    container_name: neruma_storefront
+    restart: always
+    depends_on:
+      - medusa
+      - payload
+    environment:
+      NEXT_PUBLIC_MEDUSA_BACKEND_URL: https://api.${DOMAIN:-neruma.com.br}
+      NEXT_PUBLIC_PAYLOAD_URL: https://cms.${DOMAIN:-neruma.com.br}
+      NEXT_PUBLIC_TYPESENSE_HOST: search.${DOMAIN:-neruma.com.br}
+      NEXT_PUBLIC_TYPESENSE_PORT: 443
+      NEXT_PUBLIC_TYPESENSE_PROTOCOL: https
+      NEXT_PUBLIC_TYPESENSE_API_KEY: ${TYPESENSE_PUBLIC_SEARCH_KEY:-neruma_search_readonly}
+      PORT: 3000
+    networks:
+      - neruma_app
+      - neruma_edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.storefront.rule=Host(`${DOMAIN:-neruma.com.br}`, `shop.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.storefront.entrypoints=websecure"
+      - "traefik.http.routers.storefront.tls.certresolver=letsencrypt"
+      - "traefik.http.services.storefront.loadbalancer.server.port=3000"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 800M
+
+  # ============================================================================
+  # 9. APP: PRODUCT INTELLIGENCE LAYER (FastAPI API Server)
+  # ============================================================================
+  ai-intel-api:
+    build:
+      context: ../services/ai-intel
+      dockerfile: Dockerfile
+    container_name: neruma_ai_api
+    restart: always
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      - valkey
+    environment:
+      REDIS_URL: redis://:${VALKEY_PASSWORD:-neruma_valkey_secret_2026}@valkey:6379
+      MEDUSA_API_URL: http://medusa:9000
+      PAYLOAD_API_URL: http://payload:3001
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    networks:
+      - neruma_app
+      - neruma_data
+      - neruma_edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ai-api.rule=Host(`ai.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.ai-api.entrypoints=websecure"
+      - "traefik.http.routers.ai-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ai-api.loadbalancer.server.port=8000"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 300M
+
+  # ============================================================================
+  # 10. APP: PRODUCT INTELLIGENCE WORKER (Async Queue Consumer via Valkey)
+  # ============================================================================
+  ai-intel-worker:
+    build:
+      context: ../services/ai-intel
+      dockerfile: Dockerfile
+    container_name: neruma_ai_worker
+    restart: always
+    command: ["python", "-m", "app.worker.consumer"]
+    depends_on:
+      - valkey
+      - medusa
+      - payload
+    environment:
+      REDIS_URL: redis://:${VALKEY_PASSWORD:-neruma_valkey_secret_2026}@valkey:6379
+      MEDUSA_API_URL: http://medusa:9000
+      PAYLOAD_API_URL: http://payload:3001
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    networks:
+      - neruma_app
+      - neruma_data
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 500M
+
+  # ============================================================================
+  # 10. OPS: UPTIME & HEARTBEAT (Uptime Kuma)
+  # ============================================================================
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: neruma_uptime
+    restart: always
+    volumes:
+      - uptime_data:/app/data
+    networks:
+      - neruma_ops
+      - neruma_edge
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime.rule=Host(`status.${DOMAIN:-neruma.com.br}`)"
+      - "traefik.http.routers.uptime.entrypoints=websecure"
+      - "traefik.http.routers.uptime.tls.certresolver=letsencrypt"
+      - "traefik.http.services.uptime.loadbalancer.server.port=3001"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 200M

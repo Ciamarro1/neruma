@@ -1,0 +1,60 @@
+http:
+  middlewares:
+    # 1. Cabeçalhos de Segurança (HSTS, Content-Type, XSS, Frame Options)
+    security-headers:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - PUT
+          - POST
+          - DELETE
+          - PATCH
+        accessControlMaxAge: 100
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        sslRedirect: true
+        stsSeconds: 63072000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        frameDeny: false
+        customFrameOptionsValue: "SAMEORIGIN"
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+
+    # 2. Compressão Gzip / Brotli
+    compress-all:
+      compress: {}
+
+    # 3. Rate Limiting para APIs e Checkout
+    api-ratelimit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1m
+
+    auth-ratelimit:
+      rateLimit:
+        average: 10
+        burst: 5
+        period: 1m
+
+    # 4. Basic Auth para Dashboard Traefik (admin:neruma2026 -> bcrypt)
+    admin-auth:
+      basicAuth:
+        users:
+          - "admin:$2y$10$WqBqjBmsWq0l8zV7tY3y.e8sBq4G2m1lT3kP.4r4gG0qK5a5a5a5a"
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305

@@ -1,0 +1,23 @@
+{
+  "name": "neruma-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Neruma — E-commerce & Plataforma de Design Orgânico Monorepo",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.4",
+    "prettier": "^3.3.3"
+  },
+  "packageManager": "pnpm@9.7.0"
+}

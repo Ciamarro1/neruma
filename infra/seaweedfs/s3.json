@@ -1,0 +1,33 @@
+{
+  "identities": [
+    {
+      "name": "neruma_admin",
+      "credentials": [
+        {
+          "accessKey": "neruma_seaweed_admin_key",
+          "secretKey": "neruma_seaweed_secret_key_prod_2026"
+        }
+      ],
+      "actions": [
+        "Read",
+        "Write",
+        "List",
+        "Tagging",
+        "Admin"
+      ]
+    },
+    {
+      "name": "neruma_public_readonly",
+      "credentials": [
+        {
+          "accessKey": "neruma_public_key",
+          "secretKey": "neruma_public_secret"
+        }
+      ],
+      "actions": [
+        "Read",
+        "List"
+      ]
+    }
+  ]
+}
