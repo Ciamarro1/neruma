@@ -21,7 +21,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
   const defaultVariant = product.variants?.[0];
   const calculatedPrice =
     defaultVariant?.calculated_price?.calculated_amount ||
-    defaultVariant?.prices?.[0]?.amount ||
     0;
 
   const metadata = product.metadata || {};

@@ -52,7 +52,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const defaultVariant = product.variants?.[0];
   const priceInCents =
     defaultVariant?.calculated_price?.calculated_amount ||
-    defaultVariant?.prices?.[0]?.amount ||
     0;
 
   return (
