@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Container } from '../../../components/ui/Container.js';
-import { getStories } from '../../../lib/payload/client.js';
-import { constructMetadata } from '../../../lib/seo/metadata.js';
+import { Container } from '../../../components/ui/Container';
+import { getStories } from '../../../lib/payload/client';
+import { constructMetadata } from '../../../lib/seo/metadata';
 import { ArrowRight } from 'lucide-react';
 
 export const metadata = constructMetadata({

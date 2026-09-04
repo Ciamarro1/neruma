@@ -1,12 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Container } from '../../components/ui/Container.js';
-import { Button } from '../../components/ui/Button.js';
-import { ProductCard } from '../../components/product/ProductCard.js';
-import { LookbookScene } from '../../components/editorial/LookbookScene.js';
-import { getProducts } from '../../lib/medusa/products.js';
-import { getEditorialCollections, getLookbooks, getStories } from '../../lib/payload/client.js';
+import { Container } from '../../components/ui/Container';
+import { Button } from '../../components/ui/Button';
+import { ProductCard } from '../../components/product/ProductCard';
+import { LookbookScene } from '../../components/editorial/LookbookScene';
+import { getProducts } from '../../lib/medusa/products';
+import { getEditorialCollections, getLookbooks, getStories } from '../../lib/payload/client';
 import { ArrowRight, Leaf, Sparkles, Heart } from 'lucide-react';
 
 export const revalidate = 300; // ISR a cada 5 minutos

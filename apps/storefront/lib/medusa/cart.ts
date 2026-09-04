@@ -1,4 +1,4 @@
-import { medusa } from './client.js';
+import { medusa } from './client';
 
 export async function createCart(regionId?: string) {
   try {

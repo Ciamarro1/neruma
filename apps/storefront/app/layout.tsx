@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { Header } from '../components/layout/Header.js';
-import { Footer } from '../components/layout/Footer.js';
-import { constructMetadata } from '../lib/seo/metadata.js';
+import { Header } from '../components/layout/Header';
+import { Footer } from '../components/layout/Footer';
+import { constructMetadata } from '../lib/seo/metadata';
 import '../styles/globals.css';
 
 export const metadata: Metadata = constructMetadata({

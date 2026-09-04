@@ -2,11 +2,11 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Container } from '../../../../components/ui/Container.js';
-import { ProductCard } from '../../../../components/product/ProductCard.js';
-import { getStoryBySlug } from '../../../../lib/payload/client.js';
-import { getProductByHandle } from '../../../../lib/medusa/products.js';
-import { constructMetadata } from '../../../../lib/seo/metadata.js';
+import { Container } from '../../../../components/ui/Container';
+import { ProductCard } from '../../../../components/product/ProductCard';
+import { getStoryBySlug } from '../../../../lib/payload/client';
+import { getProductByHandle } from '../../../../lib/medusa/products';
+import { constructMetadata } from '../../../../lib/seo/metadata';
 
 interface StoryPageProps {
   params: Promise<{ slug: string }>;

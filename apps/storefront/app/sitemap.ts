@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
-import { getProducts } from '../lib/medusa/products.js';
-import { getStories, getEditorialCollections } from '../lib/payload/client.js';
+import { getProducts } from '../lib/medusa/products';
+import { getStories, getEditorialCollections } from '../lib/payload/client';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://neruma.com.br';
 

@@ -2,13 +2,13 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Container } from '../../../../components/ui/Container.js';
-import { Badge } from '../../../../components/ui/Badge.js';
-import { Button } from '../../../../components/ui/Button.js';
-import { ProductJsonLd, BreadcrumbJsonLd } from '../../../../lib/seo/jsonld.js';
-import { constructMetadata } from '../../../../lib/seo/metadata.js';
-import { formatBRL, formatDimensions, formatWeight } from '../../../../lib/utils/formatters.js';
-import { getProductByHandle, getProducts } from '../../../../lib/medusa/products.js';
+import { Container } from '../../../../components/ui/Container';
+import { Badge } from '../../../../components/ui/Badge';
+import { Button } from '../../../../components/ui/Button';
+import { ProductJsonLd, BreadcrumbJsonLd } from '../../../../lib/seo/jsonld';
+import { constructMetadata } from '../../../../lib/seo/metadata';
+import { formatBRL, formatDimensions, formatWeight } from '../../../../lib/utils/formatters';
+import { getProductByHandle, getProducts } from '../../../../lib/medusa/products';
 import { ShieldCheck, Truck, Sparkles, Ruler, Leaf, RefreshCw } from 'lucide-react';
 
 interface ProductPageProps {

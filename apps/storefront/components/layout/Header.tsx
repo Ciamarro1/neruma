@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ShoppingBag, Search, Menu, Heart } from 'lucide-react';
-import { Container } from '../ui/Container.js';
+import { Container } from '../ui/Container';
 
 export const Header: React.FC = () => {
   return (

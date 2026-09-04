@@ -1,4 +1,4 @@
-import { medusa } from './client.js';
+import { medusa } from './client';
 
 export interface GetProductsParams {
   category_id?: string[];

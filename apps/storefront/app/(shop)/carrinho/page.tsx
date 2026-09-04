@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { Container } from '../../../components/ui/Container.js';
-import { Button } from '../../../components/ui/Button.js';
-import { formatBRL } from '../../../lib/utils/formatters.js';
+import { Container } from '../../../components/ui/Container';
+import { Button } from '../../../components/ui/Button';
+import { formatBRL } from '../../../lib/utils/formatters';
 import { ShoppingBag, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
 
 export default function CartPage() {

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Container } from '../ui/Container.js';
+import { Container } from '../ui/Container';
 import { ShieldCheck, Truck, Sparkles, RefreshCw } from 'lucide-react';
 
 export const Footer: React.FC = () => {

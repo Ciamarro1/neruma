@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Container } from '../../../components/ui/Container.js';
-import { Button } from '../../../components/ui/Button.js';
-import { formatBRL } from '../../../lib/utils/formatters.js';
+import { Container } from '../../../components/ui/Container';
+import { Button } from '../../../components/ui/Button';
+import { formatBRL } from '../../../lib/utils/formatters';
 import { ShieldCheck, Lock, QrCode, CreditCard, CheckCircle2 } from 'lucide-react';
 
 export default function CheckoutPage() {

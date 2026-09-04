@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatBRL, formatDimensions } from '../../lib/utils/formatters.js';
-import { Badge } from '../ui/Badge.js';
+import { formatBRL, formatDimensions } from '../../lib/utils/formatters';
+import { Badge } from '../ui/Badge';
 
 interface ProductCardProps {
   product: {

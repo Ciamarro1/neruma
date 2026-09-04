@@ -1,10 +1,10 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Container } from '../../../../components/ui/Container.js';
-import { LookbookScene } from '../../../../components/editorial/LookbookScene.js';
-import { getLookbookBySlug } from '../../../../lib/payload/client.js';
-import { constructMetadata } from '../../../../lib/seo/metadata.js';
+import { Container } from '../../../../components/ui/Container';
+import { LookbookScene } from '../../../../components/editorial/LookbookScene';
+import { getLookbookBySlug } from '../../../../lib/payload/client';
+import { constructMetadata } from '../../../../lib/seo/metadata';
 
 interface LookbookDetailPageProps {
   params: Promise<{ slug: string }>;

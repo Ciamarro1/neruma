@@ -1,9 +1,9 @@
 import React from 'react';
-import { Container } from '../../../components/ui/Container.js';
-import { ProductCard } from '../../../components/product/ProductCard.js';
-import { searchProducts } from '../../../lib/search/typesense.js';
-import { getProducts } from '../../../lib/medusa/products.js';
-import { constructMetadata } from '../../../lib/seo/metadata.js';
+import { Container } from '../../../components/ui/Container';
+import { ProductCard } from '../../../components/product/ProductCard';
+import { searchProducts } from '../../../lib/search/typesense';
+import { getProducts } from '../../../lib/medusa/products';
+import { constructMetadata } from '../../../lib/seo/metadata';
 import { Search } from 'lucide-react';
 
 export const metadata = constructMetadata({
