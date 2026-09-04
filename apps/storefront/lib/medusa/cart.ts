@@ -1,6 +1,6 @@
 import { medusa } from './client';
 
-export async function createCart(regionId?: string) {
+export async function createCart(regionId?: string): Promise<any> {
   try {
     const response = await medusa.store.cart.create({
       region_id: regionId,
@@ -12,7 +12,7 @@ export async function createCart(regionId?: string) {
   }
 }
 
-export async function getCart(cartId: string) {
+export async function getCart(cartId: string): Promise<any> {
   try {
     const response = await medusa.store.cart.retrieve(cartId, {
       fields: '+items.variant.product,+shipping_methods,+payment_collection',
@@ -24,7 +24,7 @@ export async function getCart(cartId: string) {
   }
 }
 
-export async function addToCart(cartId: string, variantId: string, quantity = 1) {
+export async function addToCart(cartId: string, variantId: string, quantity = 1): Promise<any> {
   try {
     const response = await medusa.store.cart.createLineItem(cartId, {
       variant_id: variantId,
@@ -37,7 +37,7 @@ export async function addToCart(cartId: string, variantId: string, quantity = 1)
   }
 }
 
-export async function updateLineItem(cartId: string, lineItemId: string, quantity: number) {
+export async function updateLineItem(cartId: string, lineItemId: string, quantity: number): Promise<any> {
   try {
     const response = await medusa.store.cart.updateLineItem(cartId, lineItemId, {
       quantity,
@@ -49,7 +49,7 @@ export async function updateLineItem(cartId: string, lineItemId: string, quantit
   }
 }
 
-export async function deleteLineItem(cartId: string, lineItemId: string) {
+export async function deleteLineItem(cartId: string, lineItemId: string): Promise<any> {
   try {
     const response = await medusa.store.cart.deleteLineItem(cartId, lineItemId);
     return response.parent;
@@ -59,7 +59,7 @@ export async function deleteLineItem(cartId: string, lineItemId: string) {
   }
 }
 
-export async function addShippingMethod(cartId: string, optionId: string) {
+export async function addShippingMethod(cartId: string, optionId: string): Promise<any> {
   try {
     const response = await medusa.store.cart.addShippingMethod(cartId, {
       option_id: optionId,

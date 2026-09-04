@@ -62,7 +62,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         description={product.description || ''}
         images={product.thumbnail ? [product.thumbnail] : []}
         price={priceInCents}
-        sku={defaultVariant?.sku}
+        sku={defaultVariant?.sku ?? undefined}
         url={`https://neruma.com.br/produto/${handle}`}
       />
       <BreadcrumbJsonLd

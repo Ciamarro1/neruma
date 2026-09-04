@@ -9,7 +9,7 @@ export interface GetProductsParams {
   order?: string;
 }
 
-export async function getProducts(params: GetProductsParams = {}) {
+export async function getProducts(params: GetProductsParams = {}): Promise<any> {
   try {
     const response = await medusa.store.product.list({
       limit: params.limit || 20,
@@ -24,7 +24,7 @@ export async function getProducts(params: GetProductsParams = {}) {
   }
 }
 
-export async function getProductByHandle(handle: string) {
+export async function getProductByHandle(handle: string): Promise<any> {
   try {
     const response = await medusa.store.product.list({
       handle,
@@ -38,7 +38,7 @@ export async function getProductByHandle(handle: string) {
   }
 }
 
-export async function getCategories() {
+export async function getCategories(): Promise<any> {
   try {
     const response = await medusa.store.category.list();
     return response.product_categories || [];
