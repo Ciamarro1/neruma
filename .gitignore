@@ -20,5 +20,6 @@ dump.rdb
 *.ps1
 apps/commerce/medusa-config.d.ts*
 apps/commerce/medusa-config.js*
+.turbo/
 
 

@@ -9,6 +9,13 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "build:commerce": "turbo run build --filter=@neruma/commerce",
+    "build:storefront": "turbo run build --filter=@neruma/storefront",
+    "build:cms": "turbo run build --filter=@neruma/cms",
+    "start": "echo 'Para iniciar no Railway, use o comando específico do serviço no Start Command (ex: pnpm run start:commerce)'",
+    "start:commerce": "pnpm --filter @neruma/commerce run start:prod",
+    "start:storefront": "pnpm --filter @neruma/storefront start",
+    "start:cms": "pnpm --filter @neruma/cms start",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "test": "turbo run test",

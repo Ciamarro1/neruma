@@ -8,6 +8,7 @@
     "build": "medusa build || tsc",
     "dev": "medusa develop",
     "start": "medusa start",
+    "start:prod": "medusa db:migrate && medusa start",
     "seed:brazil": "node dist/scripts/seed-brazil.js"
   },
   "dependencies": {
