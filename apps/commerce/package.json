@@ -9,7 +9,9 @@
     "dev": "medusa develop",
     "start": "medusa start -H 0.0.0.0",
     "start:prod": "medusa db:migrate && medusa start -H 0.0.0.0",
-    "seed:brazil": "node dist/scripts/seed-brazil.js"
+    "seed": "medusa exec ./src/scripts/seed-brazil.ts && medusa exec ./src/scripts/seed-3-products.ts",
+    "seed:brazil": "medusa exec ./src/scripts/seed-brazil.ts",
+    "seed:products": "medusa exec ./src/scripts/seed-3-products.ts"
   },
   "dependencies": {
     "@medusajs/admin-sdk": "2.20.1",

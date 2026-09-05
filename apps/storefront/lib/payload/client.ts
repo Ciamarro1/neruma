@@ -1,7 +1,15 @@
-const payloadUrl =
-  process.env.PAYLOAD_URL ||
-  process.env.NEXT_PUBLIC_PAYLOAD_URL ||
-  'http://localhost:3000';
+function getPayloadBaseUrl(): string {
+  let url = (
+    process.env.PAYLOAD_URL ||
+    process.env.NEXT_PUBLIC_PAYLOAD_URL ||
+    'http://localhost:3000'
+  ).trim();
+
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = `https://${url}`;
+  }
+  return url.replace(/\/+$/, '');
+}
 
 interface FetchPayloadOptions {
   depth?: number;
@@ -16,14 +24,15 @@ export async function fetchPayload<T>(
 ): Promise<T | null> {
   const { depth = 2, revalidate = 300, tags = [], params = {} } = options;
 
-  const url = new URL(`/api/${endpoint}`, payloadUrl);
-  url.searchParams.set('depth', depth.toString());
-
-  Object.entries(params).forEach(([key, value]) => {
-    url.searchParams.set(key, value);
-  });
-
   try {
+    const baseUrl = getPayloadBaseUrl();
+    const url = new URL(`/api/${endpoint}`, baseUrl);
+    url.searchParams.set('depth', depth.toString());
+
+    Object.entries(params).forEach(([key, value]) => {
+      url.searchParams.set(key, value);
+    });
+
     const response = await fetch(url.toString(), {
       next: {
         revalidate,
@@ -41,7 +50,7 @@ export async function fetchPayload<T>(
 
     return await response.json();
   } catch {
-    // Payload CMS offline no ambiente local: fallback gracioso
+    // Payload CMS offline ou URL indisponível: fallback gracioso
     return null;
   }
 }

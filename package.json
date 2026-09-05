@@ -15,6 +15,7 @@
     "start": "echo 'Para iniciar no Railway, use o comando específico do serviço no Start Command (ex: pnpm run start:commerce)'",
     "start:commerce": "pnpm --filter @neruma/commerce start",
     "migrate:commerce": "pnpm --filter @neruma/commerce exec medusa db:migrate",
+    "seed:commerce": "pnpm --filter @neruma/commerce run seed",
     "start:storefront": "pnpm --filter @neruma/storefront start",
     "start:cms": "pnpm --filter @neruma/cms start",
     "dev": "turbo run dev --parallel",
