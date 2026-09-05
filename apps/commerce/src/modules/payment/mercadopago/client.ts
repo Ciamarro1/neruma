@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { MercadoPagoOptions, MercadoPagoPaymentRequest, MercadoPagoPaymentResponse } from './types.js';
+import { MercadoPagoOptions, MercadoPagoPaymentRequest, MercadoPagoPaymentResponse } from './types';
 
 export class MercadoPagoClient {
   private client: AxiosInstance;

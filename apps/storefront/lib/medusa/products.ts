@@ -1,4 +1,5 @@
 import { medusa } from './client';
+import { FALLBACK_PRODUCTS } from './mock-data';
 
 export interface GetProductsParams {
   category_id?: string[];
@@ -14,28 +15,32 @@ export async function getProducts(params: GetProductsParams = {}): Promise<any> 
     const response = await medusa.store.product.list({
       limit: params.limit || 20,
       offset: params.offset || 0,
-      fields: '+metadata,+variants.calculated_price',
+      fields: '+metadata,*variants',
       ...params,
     });
-    return response.products || [];
-  } catch (error) {
-    console.error('[Medusa] Erro ao buscar produtos:', error);
-    return [];
+    if (response.products && response.products.length > 0) {
+      return response.products;
+    }
+  } catch {
+    console.warn('[Medusa] Backend indisponível, utilizando catálogo mock.');
   }
+  return FALLBACK_PRODUCTS.slice(0, params.limit || 20);
 }
 
 export async function getProductByHandle(handle: string): Promise<any> {
   try {
     const response = await medusa.store.product.list({
       handle,
-      fields: '+metadata,+variants.calculated_price,+categories',
+      fields: '+metadata,*variants,+categories',
       limit: 1,
     });
-    return response.products?.[0] || null;
+    if (response.products?.[0]) {
+      return response.products[0];
+    }
   } catch (error) {
-    console.error(`[Medusa] Erro ao buscar produto pelo handle "${handle}":`, error);
-    return null;
+    console.warn(`[Medusa] Backend indisponível para "${handle}", utilizando mock.`);
   }
+  return FALLBACK_PRODUCTS.find((p) => p.handle === handle) || null;
 }
 
 export async function getCategories(): Promise<any> {

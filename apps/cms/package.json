@@ -2,6 +2,7 @@
   "name": "@neruma/cms",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Payload CMS 3.0 — Editorial Brain da Neruma",
   "main": "dist/index.js",
   "scripts": {

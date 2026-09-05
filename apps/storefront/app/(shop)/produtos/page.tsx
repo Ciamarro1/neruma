@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Container } from '../../../components/ui/Container';
 import { ProductCard } from '../../../components/product/ProductCard';
 import { getProducts, getCategories } from '../../../lib/medusa/products';
@@ -20,28 +21,47 @@ export default async function ProductsCatalogPage() {
   ]);
 
   return (
-    <div className="py-12 pb-24">
+    <div className="py-12 pb-28 bg-[#141210] text-neruma-sand-100 min-h-screen">
       <Container size="lg">
-        <div className="border-b border-neruma-border pb-8 mb-12">
-          <span className="text-xs uppercase tracking-widest font-semibold text-neruma-wood block mb-2">
-            Design Orgânico
+        {/* Cabeçalho do Catálogo */}
+        <div className="border-b border-white/10 pb-10 mb-12">
+          <span className="text-[10px] uppercase tracking-[0.3em] font-semibold text-neruma-terracotta-light block mb-2">
+            Design Orgânico & Biofílico
           </span>
-          <h1 className="font-serif text-3xl sm:text-5xl font-bold text-neruma-dark">
+          <h1 className="font-serif text-3xl sm:text-5xl font-bold text-white tracking-tight">
             Todas as Criações
           </h1>
-          <p className="text-sm text-neruma-muted mt-2 max-w-xl">
-            Peças exclusivas confeccionadas à mão em madeiras nobres e fibras naturais brasileiras.
+          <p className="text-sm text-neruma-sand-400/80 mt-2.5 max-w-xl font-light leading-relaxed">
+            Peças exclusivas confeccionadas à mão em madeiras nobres e fibras naturais brasileiras, com suporte a visualização 3D interativa.
           </p>
+
+          {/* Filtros de Categorias */}
+          {categories && categories.length > 0 && (
+            <div className="flex flex-wrap gap-2.5 mt-8">
+              <span className="px-4 py-1.5 rounded-full bg-neruma-terracotta text-white text-xs font-medium">
+                Todos
+              </span>
+              {categories.map((cat: any) => (
+                <Link
+                  key={cat.id}
+                  href={`/categorias/${cat.handle}`}
+                  className="px-4 py-1.5 rounded-full bg-[#1A1816] border border-white/10 text-neruma-sand-300 hover:text-white hover:border-neruma-terracotta-light/40 text-xs font-medium transition-all"
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Grade de Produtos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.length > 0 ? (
             products.map((product: any) => (
               <ProductCard key={product.id} product={product} />
             ))
           ) : (
-            <div className="col-span-4 text-center py-24 text-neruma-muted">
+            <div className="col-span-3 text-center py-24 text-neruma-sand-400/60 font-light">
               <p>Nenhuma peça encontrada no catálogo no momento.</p>
             </div>
           )}

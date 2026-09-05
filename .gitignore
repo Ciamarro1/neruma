@@ -1,8 +1,11 @@
 node_modules/
 .env
+.env*.local
+.env.local
 dist/
 build/
 .next/
+.medusa/
 coverage/
 *.log
 .DS_Store
@@ -12,4 +15,10 @@ __pycache__/
 venv/
 .idea/
 .vscode/
+*.tsbuildinfo
+dump.rdb
+*.ps1
+apps/commerce/medusa-config.d.ts*
+apps/commerce/medusa-config.js*
+
 

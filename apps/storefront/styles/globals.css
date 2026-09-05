@@ -8,8 +8,8 @@
 }
 
 body {
-  color: #1A1816;
-  background-color: #FAF8F5;
+  color: #FAF8F5;
+  background-color: #141210;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -20,18 +20,18 @@ h1, h2, h3, .font-editorial {
   letter-spacing: -0.01em;
 }
 
-/* Custom scrollbar para visual limpo */
+/* Custom scrollbar escuro ultra-elegante */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: #141210;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D8CDBC;
+  background: #2C2824;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A68970;
+  background: #C46D47;
 }

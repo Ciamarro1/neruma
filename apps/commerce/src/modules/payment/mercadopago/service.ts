@@ -1,14 +1,41 @@
 import { AbstractPaymentProvider } from '@medusajs/framework/utils';
-import { MercadoPagoClient } from './client.js';
-import { MercadoPagoOptions, MercadoPagoPaymentRequest } from './types.js';
+import { MercadoPagoClient } from './client';
+import { MercadoPagoOptions, MercadoPagoPaymentRequest } from './types';
 
 export class MercadoPagoPaymentProviderService extends AbstractPaymentProvider<MercadoPagoOptions> {
   static identifier = 'mercadopago';
   private mpClient: MercadoPagoClient;
 
-  constructor(container: unknown, options: MercadoPagoOptions) {
-    super(container, options);
+  constructor(container: any, options: MercadoPagoOptions) {
+    super(container, options as any);
     this.mpClient = new MercadoPagoClient(options);
+  }
+
+  async getPaymentStatus(paymentSessionData: any): Promise<any> {
+    const paymentId = paymentSessionData?.payment_id || paymentSessionData?.id;
+    if (!paymentId) return 'pending';
+    try {
+      const payment = await this.mpClient.getPayment(paymentId);
+      if (payment.status === 'approved') return 'authorized';
+      if (payment.status === 'rejected' || payment.status === 'cancelled') return 'failed';
+      return 'pending';
+    } catch {
+      return 'pending';
+    }
+  }
+
+  async retrievePayment(paymentSessionData: any): Promise<any> {
+    const paymentId = paymentSessionData?.payment_id || paymentSessionData?.id;
+    if (!paymentId) return paymentSessionData;
+    return await this.mpClient.getPayment(paymentId);
+  }
+
+  async updatePayment(input: any): Promise<any> {
+    return { data: input?.data || input };
+  }
+
+  async deletePayment(paymentSessionData: any): Promise<any> {
+    return {};
   }
 
   async initiatePayment(input: any): Promise<any> {
@@ -55,7 +82,8 @@ export class MercadoPagoPaymentProviderService extends AbstractPaymentProvider<M
     };
   }
 
-  async authorizePayment(paymentSessionData: any, context: any): Promise<any> {
+  async authorizePayment(input: any): Promise<any> {
+    const paymentSessionData = input?.data || input;
     const paymentId = paymentSessionData?.payment_id || paymentSessionData?.id;
     if (!paymentId) {
       return { status: 'pending', data: paymentSessionData };

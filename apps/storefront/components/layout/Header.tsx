@@ -1,13 +1,18 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Search, Menu, Heart } from 'lucide-react';
+import { ShoppingBag, Search, Menu } from 'lucide-react';
 import { Container } from '../ui/Container';
+import { useCart } from '../../context/CartContext';
 
 export const Header: React.FC = () => {
+  const { totalCount, openDrawer } = useCart();
+
   return (
-    <header className="sticky top-0 z-40 bg-neruma-bg/95 backdrop-blur-md border-b border-neruma-border">
+    <header className="sticky top-0 z-40 bg-[#141210]/95 backdrop-blur-md border-b border-white/10 text-white transition-colors duration-300">
       {/* Top Banner */}
-      <div className="bg-neruma-dark text-neruma-sand-100 py-1.5 px-4 text-center text-xs tracking-wider uppercase font-medium">
+      <div className="bg-black/90 text-neruma-sand-300/80 border-b border-white/5 py-1.5 px-4 text-center text-xs tracking-wider uppercase font-medium">
         Frete Grátis acima de R$ 500 para todo o Brasil | Feito à Mão sob Encomenda
       </div>
 
@@ -17,7 +22,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center lg:hidden">
             <button
               type="button"
-              className="p-2 text-neruma-dark hover:text-neruma-wood"
+              className="p-2 text-white hover:text-neruma-terracotta-light transition-colors"
               aria-label="Menu"
             >
               <Menu className="w-6 h-6" />
@@ -27,48 +32,77 @@ export const Header: React.FC = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex flex-col items-center group">
-              <span className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-neruma-dark group-hover:text-neruma-wood transition-colors">
-                NERUMA
+              <span className="font-serif text-2xl sm:text-3xl font-bold tracking-[0.25em] uppercase text-white group-hover:text-neruma-sand-200 transition-colors">
+                Neruma
               </span>
-              <span className="text-[9px] tracking-[0.25em] uppercase text-neruma-muted">
+              <span className="text-[9px] tracking-[0.4em] uppercase text-neruma-sand-400 font-light -mt-1">
                 Design Orgânico
               </span>
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8 text-sm uppercase tracking-wider font-medium text-neruma-charcoal">
-            <Link href="/colecoes" className="hover:text-neruma-wood transition-colors">
+          {/* Main Navigation */}
+          <nav className="hidden lg:flex items-center space-x-8 text-xs uppercase tracking-widest font-medium text-neruma-sand-300">
+            <Link
+              href="/colecoes"
+              className="hover:text-white transition-colors"
+            >
               Coleções
             </Link>
-            <Link href="/categorias/quadros-e-paineis" className="hover:text-neruma-wood transition-colors">
-              Quadros
+            <Link
+              href="/produtos"
+              className="hover:text-white transition-colors"
+            >
+              Catálogo
             </Link>
-            <Link href="/categorias/luminarias-organicas" className="hover:text-neruma-wood transition-colors">
+            <Link
+              href="/categorias/quadros-e-paineis"
+              className="hover:text-white transition-colors"
+            >
+              Quadros & Painéis
+            </Link>
+            <Link
+              href="/categorias/luminarias-organicas"
+              className="hover:text-white transition-colors"
+            >
               Luminárias
             </Link>
-            <Link href="/categorias/mobiliario-pet" className="hover:text-neruma-wood transition-colors">
-              Linha Pet
-            </Link>
-            <Link href="/lookbooks" className="hover:text-neruma-wood transition-colors text-neruma-terracotta">
+            <Link
+              href="/lookbooks"
+              className="hover:text-white transition-colors"
+            >
               Lookbooks
             </Link>
-            <Link href="/historias" className="hover:text-neruma-wood transition-colors">
+            <Link
+              href="/historias"
+              className="hover:text-white transition-colors"
+            >
               Editorial
             </Link>
           </nav>
 
           {/* User & Cart Actions */}
-          <div className="flex items-center space-x-4 sm:space-x-6 text-neruma-dark">
-            <Link href="/busca" className="p-2 hover:text-neruma-wood transition-colors" aria-label="Buscar">
+          <div className="flex items-center space-x-4 sm:space-x-6 text-neruma-sand-200">
+            <Link
+              href="/busca"
+              className="p-2 hover:text-white transition-colors"
+              aria-label="Buscar"
+            >
               <Search className="w-5 h-5" />
             </Link>
-            <Link href="/carrinho" className="p-2 hover:text-neruma-wood transition-colors relative" aria-label="Carrinho">
+            <button
+              type="button"
+              onClick={openDrawer}
+              className="p-2 hover:text-white transition-colors relative cursor-pointer"
+              aria-label="Abrir Sacola de Compras"
+            >
               <ShoppingBag className="w-5 h-5" />
-              <span className="absolute top-1 right-1 bg-neruma-terracotta text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                0
-              </span>
-            </Link>
+              {totalCount > 0 && (
+                <span className="absolute top-1 right-1 bg-neruma-terracotta text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow-md shadow-neruma-terracotta/40">
+                  {totalCount > 99 ? '99+' : totalCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </Container>

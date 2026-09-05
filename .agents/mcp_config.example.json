@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "postgres-medusa": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://medusa_user:generate_medusa_db_password_here_123@localhost:5432/medusa_db"
+      ],
+      "description": "Acesso direto para inspeção de esquemas e tabelas de comércio do Medusa v2"
+    },
+    "postgres-payload": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://payload_user:generate_payload_db_password_here_123@localhost:5432/payload_db"
+      ],
+      "description": "Acesso direto para inspeção das coleções e tabelas editoriais do Payload CMS 3.0"
+    },
+    "docker": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "docker-mcp"
+      ],
+      "description": "Gerenciamento e leitura de logs dos containers locais do Neruma (Traefik, Valkey, Postgres, MinIO)"
+    }
+  }
+}

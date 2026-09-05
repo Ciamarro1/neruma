@@ -1,5 +1,5 @@
 import { ModuleProvider, Modules } from '@medusajs/framework/utils';
-import { MelhorEnvioFulfillmentService } from './service.js';
+import { MelhorEnvioFulfillmentService } from './service';
 
 export default ModuleProvider(Modules.FULFILLMENT, {
   services: [MelhorEnvioFulfillmentService],

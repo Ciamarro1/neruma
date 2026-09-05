@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { MelhorEnvioCalculateRequest, MelhorEnvioOptions, MelhorEnvioServiceRate } from './types.js';
+import { MelhorEnvioCalculateRequest, MelhorEnvioOptions, MelhorEnvioServiceRate } from './types';
 
 export class MelhorEnvioClient {
   private client: AxiosInstance;

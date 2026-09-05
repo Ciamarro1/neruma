@@ -27,6 +27,7 @@ export interface MercadoPagoPaymentRequest {
 
 export interface MercadoPagoPaymentResponse {
   id: number;
+  external_reference?: string;
   status: 'pending' | 'approved' | 'authorized' | 'in_process' | 'rejected' | 'cancelled' | 'refunded';
   status_detail: string;
   point_of_interaction?: {

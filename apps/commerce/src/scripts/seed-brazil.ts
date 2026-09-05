@@ -30,7 +30,7 @@ export default async function seedBrazil({ container }: ExecArgs) {
   });
 
   if (!brazilRegion) {
-    brazilRegion = await regionService.createRegions({
+    brazilRegion = await (regionService as any).createRegions({
       name: 'Brasil',
       currency_code: 'brl',
       countries: ['br'],
@@ -130,7 +130,7 @@ export default async function seedBrazil({ container }: ExecArgs) {
   });
 
   if (!existingProduct) {
-    await productModule.createProducts({
+    await (productModule as any).createProducts({
       title: 'Painel Orgânico Freijó & Sisal',
       subtitle: 'Design biofílico feito à mão com madeira nobre de manejo sustentável',
       handle: 'painel-organico-freijo-sisal',
@@ -150,10 +150,13 @@ export default async function seedBrazil({ container }: ExecArgs) {
         {
           title: '60x90cm (Padrão)',
           sku: 'NER-PNL-6090-FRJ',
-          manage_inventory: true,
+          manage_inventory: false,
+          options: {
+            Dimensão: '60x90cm',
+          },
           prices: [
             {
-              amount: 890, // R$ 890,00
+              amount: 89000, // R$ 890,00 (centavos)
               currency_code: 'brl',
             },
           ],

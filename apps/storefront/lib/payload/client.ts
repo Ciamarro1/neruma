@@ -1,7 +1,7 @@
 const payloadUrl =
   process.env.PAYLOAD_URL ||
   process.env.NEXT_PUBLIC_PAYLOAD_URL ||
-  'http://localhost:3001';
+  'http://localhost:3000';
 
 interface FetchPayloadOptions {
   depth?: number;
@@ -40,8 +40,8 @@ export async function fetchPayload<T>(
     }
 
     return await response.json();
-  } catch (error) {
-    console.error(`[Payload] Erro ao conectar em ${url.toString()}:`, error);
+  } catch {
+    // Payload CMS offline no ambiente local: fallback gracioso
     return null;
   }
 }

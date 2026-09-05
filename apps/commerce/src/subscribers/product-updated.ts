@@ -1,5 +1,5 @@
 import { SubscriberArgs, SubscriberConfig } from '@medusajs/framework';
-import { enqueueAIJob } from '../lib/queue.js';
+import { enqueueAIJob } from '../lib/queue';
 
 export default async function productUpdatedHandler({
   event,

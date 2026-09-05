@@ -17,7 +17,9 @@ export const typesenseClient = new Typesense.Client({
     },
   ],
   apiKey: typesenseApiKey,
-  connectionTimeoutSeconds: 2,
+  connectionTimeoutSeconds: 1,
+  numRetries: 0,
+  logLevel: 'silent',
 });
 
 export interface SearchFilters {
@@ -69,8 +71,8 @@ export async function searchProducts(filters: SearchFilters = {}) {
       });
 
     return searchResults;
-  } catch (error) {
-    console.error('[Typesense] Erro na busca:', error);
+  } catch {
+    // Typesense offline no ambiente local: fallback silencioso para catálogo do Medusa/Mock
     return null;
   }
 }

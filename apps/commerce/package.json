@@ -11,14 +11,26 @@
     "seed:brazil": "node dist/scripts/seed-brazil.js"
   },
   "dependencies": {
+    "@medusajs/admin-sdk": "2.20.1",
+    "@medusajs/admin-shared": "2.20.1",
+    "@medusajs/dashboard": "2.20.1",
+    "@medusajs/draft-order": "2.20.1",
     "@medusajs/framework": "^2.0.0",
+    "@medusajs/icons": "2.20.1",
     "@medusajs/medusa": "^2.0.0",
+    "@medusajs/ui": "^4.2.3",
     "@neruma/types": "workspace:*",
     "axios": "^1.7.4",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "ioredis": "^6.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@medusajs/cli": "2.20.1",
+    "@types/ioredis": "^5.0.0",
     "@types/node": "^20.14.14",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   }
 }

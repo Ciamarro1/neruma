@@ -5,30 +5,30 @@ import { ShieldCheck, Truck, Sparkles, RefreshCw } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-neruma-charcoal text-neruma-sand-100 border-t border-neruma-wood-dark">
+    <footer className="bg-[#100F0E] text-neruma-sand-100 border-t border-white/10">
       {/* Brand Values Banner */}
-      <div className="border-b border-neruma-charcoal/40 bg-neruma-dark py-12">
+      <div className="border-b border-white/5 bg-[#141210] py-14">
         <Container size="lg">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
-            <div className="flex flex-col items-center md:items-start">
-              <Sparkles className="w-8 h-8 text-neruma-sand-300 mb-3" />
-              <h4 className="font-serif text-lg font-semibold text-white mb-1">100% Feito à Mão</h4>
-              <p className="text-xs text-neruma-sand-300">Cada peça carrega a alma e o tempo do artesão brasileiro.</p>
+            <div className="flex flex-col items-center md:items-start p-4 rounded-organic bg-[#1A1816]/40 border border-white/5">
+              <Sparkles className="w-7 h-7 text-neruma-terracotta-light mb-3" />
+              <h4 className="font-serif text-base font-semibold text-white mb-1.5">100% Feito à Mão</h4>
+              <p className="text-xs text-neruma-sand-400/80 leading-relaxed">Cada peça carrega a alma e o tempo do artesão brasileiro.</p>
             </div>
-            <div className="flex flex-col items-center md:items-start">
-              <ShieldCheck className="w-8 h-8 text-neruma-sand-300 mb-3" />
-              <h4 className="font-serif text-lg font-semibold text-white mb-1">Madeira Sustentável</h4>
-              <p className="text-xs text-neruma-sand-300">Apenas Freijó e Cumaru de manejo florestal certificado.</p>
+            <div className="flex flex-col items-center md:items-start p-4 rounded-organic bg-[#1A1816]/40 border border-white/5">
+              <ShieldCheck className="w-7 h-7 text-neruma-terracotta-light mb-3" />
+              <h4 className="font-serif text-base font-semibold text-white mb-1.5">Madeira Sustentável</h4>
+              <p className="text-xs text-neruma-sand-400/80 leading-relaxed">Apenas Freijó e Cumaru de manejo florestal sustentável.</p>
             </div>
-            <div className="flex flex-col items-center md:items-start">
-              <Truck className="w-8 h-8 text-neruma-sand-300 mb-3" />
-              <h4 className="font-serif text-lg font-semibold text-white mb-1">Embalagem Segura</h4>
-              <p className="text-xs text-neruma-sand-300">Proteção antichoque reforçada para peças de grande porte.</p>
+            <div className="flex flex-col items-center md:items-start p-4 rounded-organic bg-[#1A1816]/40 border border-white/5">
+              <Truck className="w-7 h-7 text-neruma-terracotta-light mb-3" />
+              <h4 className="font-serif text-base font-semibold text-white mb-1.5">Embalagem Segura</h4>
+              <p className="text-xs text-neruma-sand-400/80 leading-relaxed">Proteção antichoque reforçada e livre de plásticos.</p>
             </div>
-            <div className="flex flex-col items-center md:items-start">
-              <RefreshCw className="w-8 h-8 text-neruma-sand-300 mb-3" />
-              <h4 className="font-serif text-lg font-semibold text-white mb-1">Garantia Ateliê</h4>
-              <p className="text-xs text-neruma-sand-300">Acompanhamento e suporte direto com quem produz.</p>
+            <div className="flex flex-col items-center md:items-start p-4 rounded-organic bg-[#1A1816]/40 border border-white/5">
+              <RefreshCw className="w-7 h-7 text-neruma-terracotta-light mb-3" />
+              <h4 className="font-serif text-base font-semibold text-white mb-1.5">Garantia Ateliê</h4>
+              <p className="text-xs text-neruma-sand-400/80 leading-relaxed">1 ano de garantia direta com nossos mestres artesãos.</p>
             </div>
           </div>
         </Container>
@@ -42,17 +42,17 @@ export const Footer: React.FC = () => {
               <span className="font-serif text-2xl font-bold tracking-tight text-white block mb-4">
                 NERUMA
               </span>
-              <p className="text-sm text-neruma-sand-300 max-w-sm mb-6 leading-relaxed">
+              <p className="text-sm text-neruma-sand-300/80 max-w-sm mb-6 leading-relaxed font-light">
                 Transformando lares através da união entre o design biofílico contemporâneo e as tradições ancestrais da madeira nobre e das fibras naturais.
               </p>
-              <p className="text-xs text-neruma-sand-400">
+              <p className="text-xs text-neruma-sand-400/60 font-light">
                 Ateliê São Paulo | CNPJ: 00.000.000/0001-00
               </p>
             </div>
 
             <div>
               <h5 className="text-xs uppercase tracking-widest font-semibold text-white mb-4">Loja</h5>
-              <ul className="space-y-2 text-sm text-neruma-sand-300">
+              <ul className="space-y-2.5 text-sm text-neruma-sand-400 font-light">
                 <li><Link href="/colecoes" className="hover:text-white transition-colors">Coleções</Link></li>
                 <li><Link href="/categorias/quadros-e-paineis" className="hover:text-white transition-colors">Quadros & Painéis</Link></li>
                 <li><Link href="/categorias/luminarias-organicas" className="hover:text-white transition-colors">Luminárias</Link></li>
@@ -62,28 +62,29 @@ export const Footer: React.FC = () => {
 
             <div>
               <h5 className="text-xs uppercase tracking-widest font-semibold text-white mb-4">Editorial</h5>
-              <ul className="space-y-2 text-sm text-neruma-sand-300">
-                <li><Link href="/lookbooks" className="hover:text-white transition-colors">Lookbooks Interativos</Link></li>
-                <li><Link href="/ambientes" className="hover:text-white transition-colors">Inspiração por Ambiente</Link></li>
-                <li><Link href="/historias" className="hover:text-white transition-colors">Histórias de Ateliê</Link></li>
-                <li><Link href="/guias" className="hover:text-white transition-colors">Guia de Cuidados</Link></li>
+              <ul className="space-y-2.5 text-sm text-neruma-sand-400 font-light">
+                <li><Link href="/lookbooks" className="hover:text-white transition-colors">Lookbooks</Link></li>
+                <li><Link href="/historias" className="hover:text-white transition-colors">Histórias de Criação</Link></li>
+                <li><Link href="/sobre" className="hover:text-white transition-colors">O Manifesto Neruma</Link></li>
               </ul>
             </div>
 
             <div>
               <h5 className="text-xs uppercase tracking-widest font-semibold text-white mb-4">Atendimento</h5>
-              <ul className="space-y-2 text-sm text-neruma-sand-300">
-                <li><a href="mailto:contato@neruma.com.br" className="hover:text-white transition-colors">contato@neruma.com.br</a></li>
-                <li><span className="block text-xs text-neruma-sand-400 mt-1">Seg a Sex das 09h às 18h</span></li>
-                <li className="pt-2"><Link href="/faq" className="hover:text-white transition-colors">Dúvidas Frequentes</Link></li>
-                <li><Link href="/politica-de-privacidade" className="hover:text-white transition-colors">Privacidade & Termos</Link></li>
+              <ul className="space-y-2.5 text-sm text-neruma-sand-400 font-light">
+                <li><Link href="/faq" className="hover:text-white transition-colors">Dúvidas Frequentes</Link></li>
+                <li><Link href="/envios" className="hover:text-white transition-colors">Prazos & Entregas</Link></li>
+                <li><Link href="/contato" className="hover:text-white transition-colors">Fale com o Ateliê</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="mt-16 pt-8 border-t border-neruma-wood/30 flex flex-col sm:flex-row items-center justify-between text-xs text-neruma-sand-400">
+          <div className="border-t border-white/5 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-neruma-sand-400/60 font-light">
             <p>© {new Date().getFullYear()} Neruma Design Orgânico. Todos os direitos reservados.</p>
-            <p className="mt-4 sm:mt-0">100% Infraestrutura Própria & Soberana</p>
+            <div className="flex space-x-6 mt-4 sm:mt-0">
+              <Link href="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
+              <Link href="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>
+            </div>
           </div>
         </Container>
       </div>

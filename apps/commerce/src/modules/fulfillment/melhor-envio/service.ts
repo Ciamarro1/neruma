@@ -1,14 +1,14 @@
-import { AbstractFulfillmentProvider } from '@medusajs/framework/utils';
-import { MelhorEnvioClient } from './client.js';
-import { MelhorEnvioOptions, MelhorEnvioCalculateRequest } from './types.js';
+import { AbstractFulfillmentProviderService } from '@medusajs/framework/utils';
+import { MelhorEnvioClient } from './client';
+import { MelhorEnvioOptions, MelhorEnvioCalculateRequest } from './types';
 
-export class MelhorEnvioFulfillmentService extends AbstractFulfillmentProvider<MelhorEnvioOptions> {
+export class MelhorEnvioFulfillmentService extends AbstractFulfillmentProviderService {
   static identifier = 'melhor-envio';
   private meClient: MelhorEnvioClient;
   private originPostalCode: string;
 
   constructor(container: unknown, options: MelhorEnvioOptions) {
-    super(container, options);
+    super();
     this.meClient = new MelhorEnvioClient(options);
     this.originPostalCode = options.originPostalCode?.replace(/\D/g, '') || '01310100';
   }
@@ -17,13 +17,16 @@ export class MelhorEnvioFulfillmentService extends AbstractFulfillmentProvider<M
     return true;
   }
 
-  async calculatePrice(optionData: any, data: any, context: any): Promise<number> {
+  async calculatePrice(optionData: any, data: any, context: any): Promise<any> {
     const destinationPostalCode =
       context?.shipping_address?.postal_code?.replace(/\D/g, '') ||
       data?.postal_code?.replace(/\D/g, '');
 
     if (!destinationPostalCode || destinationPostalCode.length !== 8) {
-      return 0;
+      return {
+        calculated_amount: 0,
+        is_calculated_price_tax_inclusive: true,
+      };
     }
 
     // Itens do carrinho com dimensões de produto Neruma (convertidos de mm/g para cm/kg)
@@ -68,14 +71,19 @@ export class MelhorEnvioFulfillmentService extends AbstractFulfillmentProvider<M
       const selectedServiceId = optionData?.service_id;
 
       const rate = rates.find((r) => r.id === Number(selectedServiceId)) || rates[0];
-      if (rate) {
-        // Converte valor BRL (ex: "25.50") para centavos (2550)
-        return Math.round(parseFloat(rate.custom_price || rate.price) * 100);
-      }
-      return 2500; // Fallback seguro R$ 25,00 se a API falhar
+      const amount = rate
+        ? Math.round(parseFloat(rate.custom_price || rate.price) * 100)
+        : 2500;
+      return {
+        calculated_amount: amount,
+        is_calculated_price_tax_inclusive: true,
+      };
     } catch (error) {
       console.error('[MelhorEnvio] Erro ao cotar frete:', error);
-      return 3000; // Taxa de segurança padrão
+      return {
+        calculated_amount: 3000,
+        is_calculated_price_tax_inclusive: true,
+      };
     }
   }
 
