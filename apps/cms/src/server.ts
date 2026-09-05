@@ -5,30 +5,52 @@ import config from './payload.config.js';
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const HOST = '0.0.0.0';
 
+async function ensureDatabaseSchema(payload: any) {
+  try {
+    const checkResult = await payload.db.execute({
+      drizzle: payload.db.drizzle,
+      raw: `SELECT count(*) as count FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'collections';`,
+    });
+    const count = parseInt(checkResult.rows?.[0]?.count || '0', 10);
+    if (count > 0) {
+      console.log('[Payload CMS] Tabelas do banco de dados já existem. Inicialização concluída.');
+      return;
+    }
+
+    console.log('[Payload CMS] Banco de dados vazio detectado. Gerando e aplicando DDL schema inicial...');
+    const { generateDrizzleJson, generateMigration } = payload.db.requireDrizzleKit();
+    const after = await generateDrizzleJson(payload.db.schema);
+    const statements = await generateMigration(payload.db.defaultDrizzleSnapshot, after);
+    console.log(`[Payload CMS] Aplicando ${statements.length} instruções SQL para criar tabelas e relacionamentos...`);
+
+    let applied = 0;
+    for (const stmt of statements) {
+      try {
+        await payload.db.execute({ drizzle: payload.db.drizzle, raw: stmt });
+        applied++;
+      } catch (err: any) {
+        const msg = err.message || '';
+        if (!msg.includes('already exists') && !msg.includes('já existe')) {
+          console.warn('[Payload CMS] Aviso ao executar instrução DDL:', msg);
+        }
+      }
+    }
+    console.log(`[Payload CMS] Schema PostgreSQL inicial criado com sucesso (${applied} instruções executadas)!`);
+  } catch (err: any) {
+    console.error('[Payload CMS] Falha ao verificar/aplicar schema do banco:', err);
+  }
+}
+
 async function start() {
   console.log('[Payload CMS] Inicializando engine editorial...');
   let payload: any;
-  const originalEnv = process.env.NODE_ENV;
-  const originalCI = process.env.CI;
   try {
-    if (process.env.PAYLOAD_AUTO_PUSH !== 'false') {
-      (process.env as any).NODE_ENV = 'development';
-      // Force push without interactive prompts in non-TTY environments (Railway, Docker)
-      process.env.PAYLOAD_FORCE_DRIZZLE_PUSH = 'true';
-      process.env.CI = 'true';
-    }
     payload = await getPayload({ config });
-    console.log('[Payload CMS] Conectado ao banco de dados e schema sincronizado com sucesso.');
+    console.log('[Payload CMS] Conectado ao banco de dados com sucesso.');
+    await ensureDatabaseSchema(payload);
   } catch (err: any) {
     console.error('[Payload CMS] Erro crítico ao inicializar conexão com o banco:', err.message);
     throw err;
-  } finally {
-    (process.env as any).NODE_ENV = originalEnv;
-    if (originalCI === undefined) {
-      delete process.env.CI;
-    } else {
-      process.env.CI = originalCI;
-    }
   }
 
   const server = http.createServer(async (req, res) => {

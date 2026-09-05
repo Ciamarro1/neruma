@@ -70,7 +70,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'focalPoint',
-      type: 'point',
+      type: 'json',
       label: 'Ponto Focal para Recorte',
     },
   ],
