@@ -1,240 +1,202 @@
-# NERUMA — RELATÓRIO DE HANDOFF & TRANSFERÊNCIA DE CONTEXTO
+# NERUMA — RELATÓRIO CONSOLIDADO DE HANDOFF & TRANSFERÊNCIA DE CONTEXTO
 
-> **Data:** 03 de Setembro de 2026  
-> **Status do Projeto:** Fase de Fundação 100% Concluída (Arquitetura, Tipos, Commerce, CMS, Storefront, AI Intelligence e Infraestrutura).  
-> **Local do Monorepo:** `e:\projcts\neruma`
+> **Data:** 05 de Setembro de 2026  
+> **Status Geral do Projeto:** Fase 1 (Fundação Monorepo) e Fase 2 (Storefront Biofílico 3D, Carrinho/Checkout, Deploy Standalone/Railway) 100% Concluídas.  
+> **Integridade do Código:** TypeScript `strict: true` compilando sem erros em todos os workspaces; Monorepo pronto para deploy e desenvolvimento.
 
 ---
 
-## 1. Visão Geral & Filosofia do Projeto
+## 1. Visão Geral & Filosofia de Engenharia
 
-A **Neruma** é uma operação comercial brasileira de e-commerce de alto padrão focada em decoração biofílica e design orgânico (quadros em freijó maciço, luminárias em fibras de sisal/algodão, peças em bambu e mobiliário pet minimalista).
+A **Neruma** é uma plataforma e-commerce de alto padrão e revista editorial voltada ao design orgânico e decoração biofílica (luminárias em nós de macramê, painéis de sisal/algodão, peças em freijó e móveis artesanais).
 
-### Pilares Fundamentais:
-1. **Soberania Tecnológica (100% Self-Hosted Open Source no Core):** Todo o software sob controle da operação é open source com licenças limpas (MIT, Apache-2.0, BSD-3, PostgreSQL License).
-2. **Serviços Externos Apenas Onde Inevitáveis:** Pagamento (Pix/Cartão via Mercado Pago/Asaas), Frete/Logística (Melhor Envio/Correios/Jadlog), CDN/WAF/DDoS (Cloudflare) e Backup Off-site (Cloudflare R2).
-3. **Desacoplamento Rigoroso:**
-   - **Medusa v2:** Única fonte de verdade comercial (preço, variantes, estoque, carrinho, checkout, frete, pagamentos).
-   - **Payload CMS 3.0:** Cérebro editorial (coleções, lookbooks "Shop the Look", histórias de ateliê, guias de conservação de materiais).
-   - **Next.js 15 App Router:** Camada de apresentação e experiência (SSR/ISR, sem regras de negócio embutidas).
-   - **Neruma AI Worker:** Enriquecimento assíncrono via fila Valkey, com Quality Gate anti-alucinação e gravação com status `_status: draft` no Payload (Human-in-the-loop obrigatório).
-   - **Typesense:** Motor de busca instantâneo e facetado em C++ (desafoga o PostgreSQL).
+### As 5 Regras de Ouro da Arquitetura:
+1. **Medusa v2 (`apps/commerce`):** ÚNICA fonte de verdade comercial (preços, catálogo, estoque, frete Melhor Envio, pagamentos Mercado Pago / Pix).
+2. **Payload CMS 3.0 (`apps/cms`):** ÚNICA fonte de verdade editorial (lookbooks "Shop the Look" com hotspots X/Y%, histórias, ambientes, guias).
+3. **Storefront (`apps/storefront`):** Next.js 15 App Router + React 19 + Tailwind CSS — apenas camada de apresentação e experiência de compra. Sem persistência financeira direta ou regras de negócio críticas.
+4. **Neruma AI Worker (`services/ai-intel`):** Fila assíncrona Valkey (`neruma:ai:queue`) com Quality Gate anti-alucinação rígido. Sempre grava rascunhos com `_status: 'draft'` no Payload (Human-in-the-Loop obrigatório).
+5. **Contratos Canônicos em `@neruma/types`:** Toda tipagem compartilhada entre os serviços reside centralizada em `packages/types`.
 
 ---
 
 ## 2. Mapa Estrutural do Monorepo
 
 ```text
-e:\projcts\neruma/
-├── package.json                       # Turborepo + pnpm workspaces
+neruma/
+├── package.json                       # Turborepo + pnpm workspaces (scripts unificados de start e build)
 ├── pnpm-workspace.yaml                # apps/*, services/*, packages/*
-├── tsconfig.base.json                 # Configuração TS base estrita
-├── .env.example                       # Matriz completa de variáveis e segredos isolados
-├── README.md
+├── tsconfig.base.json                 # Configuração TS base estrita (strict: true)
+├── .env.example                       # Matriz completa de variáveis de ambiente
+├── turbo.json                         # Pipelines Turborepo com cache e filters por app
 │
 ├── packages/
-│   └── types/                         # @neruma/types (Contratos de Domínio)
-│       ├── src/
-│       │   ├── product.ts             # Separado em Commercial, Design, Manufacturing (BOM) e Logistics
-│       │   ├── shipping.ts            # Contratos de frete brasileiro (CEP, cubagem, transportadoras)
-│       │   ├── payment.ts             # Contratos Pix, Cartão de Crédito, Boletos e Webhooks
-│       │   ├── inventory.ts & pricing.ts # Regras de estoque e precificação artesanal
-│       │   ├── order.ts & customer.ts # Pedidos, clientes e endereços no formato Brasil
-│       │   ├── content.ts             # Schemas editoriais Payload CMS
-│       │   ├── ai.ts                  # AIJob, AIJobStatus, QualityGateResult e Telemetria
-│       │   └── index.ts
-│       └── package.json
+│   └── types/                         # @neruma/types (Contratos Canônicos TypeScript)
+│       ├── product.ts                 # Commercial, Design, Manufacturing (BOM) e Logistics
+│       ├── shipping.ts                # Frete brasileiro (CEP, cubagem em mm/g -> cm/kg)
+│       ├── payment.ts                 # Pix QR Code, Copia e Cola, Cartão e Webhooks
+│       ├── inventory.ts & pricing.ts  # Estoque e preços em centavos BRL
+│       ├── order.ts & customer.ts     # Pedidos e clientes formato Brasil
+│       ├── content.ts                 # Schemas editoriais Payload CMS
+│       └── ai.ts                      # AIJob, QualityGateResult e Telemetria
 │
 ├── apps/
-│   ├── commerce/                      # @neruma/commerce (Medusa v2 Engine)
-│   │   ├── medusa-config.ts           # Configuração PostgreSQL + Valkey + Module Providers
-│   │   ├── package.json
+│   ├── commerce/                      # @neruma/commerce (Medusa v2 API)
+│   │   ├── medusa-config.ts           # Configuração PG, Valkey, detecção dinâmica de build do Admin
 │   │   ├── src/
-│   │   │   ├── modules/
-│   │   │   │   ├── payment/mercadopago/     # Adapter Mercado Pago (Pix QR Code/Copia e Cola, Cartão)
-│   │   │   │   └── fulfillment/melhor-envio/# Adapter Melhor Envio (PAC, SEDEX, Jadlog .Com e Package)
-│   │   │   ├── subscribers/
-│   │   │   │   ├── product-created.ts       # Dispara job product_enrichment para a fila Valkey
-│   │   │   │   └── product-updated.ts       # Dispara job product_seo para a fila Valkey
-│   │   │   ├── lib/
-│   │   │   │   └── queue.ts                 # Enfileirador Valkey com trava de idempotência de 24h
-│   │   │   └── scripts/
-│   │   │       └── seed-brazil.ts           # Seed Região Brasil, BRL, Categorias e Painel Freijó
-│   │   └── tsconfig.json
+│   │   │   ├── modules/payment/mercadopago/     # Adapter Mercado Pago (Pix e Cartão)
+│   │   │   ├── modules/fulfillment/melhor-envio/# Adapter Melhor Envio (PAC, SEDEX, Jadlog)
+│   │   │   ├── subscribers/                     # Eventos de criação/atualização de produto -> fila Valkey
+│   │   │   ├── lib/queue.ts                     # Enfileirador Valkey com lock de 24h
+│   │   │   └── scripts/                         # seed-brazil, seed-3-products, create-api-key, publish-product
+│   │   └── Dockerfile
 │   │
-│   ├── cms/                           # @neruma/cms (Payload CMS 3.0)
+│   ├── cms/                           # @neruma/cms (Payload CMS 3.0 Standalone REST Server)
 │   │   ├── src/
-│   │   │   ├── payload.config.ts      # Configuração com Postgres, Lexical, S3 SeaweedFS e Auth
-│   │   │   ├── collections/
-│   │   │   │   ├── Collections.ts     # Coleções editoriais com vínculos Medusa
-│   │   │   │   ├── Stories.ts         # Artigos da revista Neruma com tempo de leitura e produtos citados
-│   │   │   │   ├── Lookbooks.ts       # Lookbooks com hotspots X/Y% para "Shop the Look"
-│   │   │   │   ├── Rooms.ts           # Ambientes biofílicos e dicas espaciais
-│   │   │   │   ├── Guides.ts          # Tutoriais de conservação de madeira e fibras
-│   │   │   │   └── Media.ts           # Uploads S3 com tamanhos responsivos e Alt-Text obrigatório
-│   │   │   └── globals/
-│   │   │       ├── SiteSettings.ts    # Institucional, CNPJ, WhatsApp e Redes Sociais
-│   │   │       ├── Navigation.ts      # Menus e barra de avisos de frete grátis
-│   │   │       └── SEO.ts             # Metadados globais e JSON-LD
-│   │   └── package.json
+│   │   │   ├── server.ts              # Servidor HTTP nativo Node.js com Drizzle Auto-push & REST API
+│   │   │   ├── payload.config.ts      # Configuração Payload 3.0 com Postgres e S3 Storage
+│   │   │   ├── collections/           # Collections, Stories, Lookbooks, Rooms, Guides, Media
+│   │   │   └── globals/               # SiteSettings, Navigation, SEO
+│   │   └── Dockerfile
 │   │
-│   └── storefront/                    # @neruma/storefront (Next.js 15 App Router)
+│   └── storefront/                    # @neruma/storefront (Next.js 15 App Router + React 19)
 │       ├── app/
-│       │   ├── layout.tsx             # Root layout com Header, Footer e SEO
-│       │   ├── sitemap.ts             # Sitemap dinâmico unindo Medusa e Payload
-│       │   ├── robots.ts              # Regras de indexação
-│       │   ├── api/revalidate/route.ts# Webhook On-Demand ISR
 │       │   ├── (shop)/
-│       │   │   ├── page.tsx           # Home editorial completa
-│       │   │   ├── produtos/page.tsx  # Catálogo geral
-│       │   │   ├── produto/[handle]/page.tsx # PDP com preços Medusa, specs em mm e JSON-LD
-│       │   │   ├── busca/page.tsx     # Busca Typesense facetada
-│       │   │   ├── carrinho/page.tsx  # Sacola e estimador de frete
-│       │   │   └── checkout/page.tsx  # Checkout progressivo em 3 etapas
-│       │   └── (editorial)/
-│       │       ├── lookbooks/         # Listagem e detalhe de lookbooks interativos
-│       │       └── historias/         # Revista editorial e produtos citados
+│       │   │   ├── page.tsx           # Home biofílica luxo (Hero editorial, curadoria, lookbooks)
+│       │   │   ├── produto/[handle]/  # PDP dinâmica com detecção de modelo 3D GLB
+│       │   │   ├── categorias/[handle]/# Listagem de categorias com filtros
+│       │   │   ├── colecoes/          # Galeria de coleções editoriais
+│       │   │   ├── busca/             # Busca instantânea Typesense com facetas
+│       │   │   ├── carrinho/          # Sacola completa com cálculo de frete
+│       │   │   ├── checkout/          # Checkout progressivo em 3 etapas com Pix e Cartão
+│       │   │   └── sobre, contato, faq, envios, termos, privacidade (todas funcionais)
+│       │   ├── (editorial)/
+│       │   │   ├── lookbooks/         # Lookbooks interativos com hotspots
+│       │   │   └── historias/         # Revista editorial Neruma
+│       │   ├── api/checkout/send-confirmation/ # Disparo de e-mail de confirmação de pedido
+│       │   ├── layout.tsx             # Root layout com CartProvider e CartDrawer global
+│       │   └── sitemap.ts & robots.ts # SEO dinâmico com fallback resiliente
 │       ├── components/
-│       │   ├── product/ProductCard.tsx# Card estratégico reutilizado em toda a aplicação
-│       │   ├── editorial/LookbookScene.tsx # Renderizador de hotspots interativos
-│       │   ├── layout/                # Header, Footer
-│       │   └── ui/                    # Button, Container, Badge
-│       ├── lib/
-│       │   ├── medusa/client.ts       # Medusa JS SDK v2 (@medusajs/js-sdk)
-│       │   ├── payload/client.ts      # Cliente REST com tags de revalidação
-│       │   ├── search/typesense.ts    # Cliente de busca Typesense
-│       │   ├── seo/metadata.ts        # Helper OpenGraph e metadados
-│       │   ├── seo/jsonld.tsx         # Schemas Schema.org
-│       │   └── utils/formatters.ts    # BRL, dimensões em cm e CEP
-│       └── tailwind.config.ts         # Paleta Neruma (madeira freijó, areia, terracota, oliva)
+│       │   ├── product/ProductViewer3D.tsx     # Viewer 3D WebGL (Three.js / R3F) com OrbitControls
+│       │   ├── product/ProductImmersivePDP.tsx # PDP Zenin Sound Style: Hero escuro, scroll reveal, specs
+│       │   ├── cart/CartDrawer.tsx             # Gaveta de carrinho lateral com animação e feedback instantâneo
+│       │   ├── editorial/LookbookScene.tsx     # Hotspots X/Y% interativos sobre imagens
+│       │   └── ui/ScrollReveal.tsx             # Animações de viewport via Intersection Observer
+│       ├── context/CartContext.tsx    # Estado global do carrinho com persistência em localStorage
+│       ├── lib/email/order-email.ts   # Gerador de template HTML de e-mail de confirmação de compra
+│       └── lib/medusa/mock-data.ts    # Catálogo fallback com luminária 3D e painéis artesanais
 │
 ├── services/
-│   └── ai-intel/                      # Neruma AI Product Intelligence Layer (Python)
+│   └── ai-intel/                      # Neruma AI Product Intelligence Layer (Python 3.11 / FastAPI)
 │       ├── app/
 │       │   ├── main.py                # FastAPI API Server
-│       │   ├── config.py              # Configurações com Pydantic Settings
-│       │   ├── api/                   # /health, /ready, /v1/products/{id}/enrich
-│       │   ├── domain/                # ProductSnapshot, ProductEnrichment, QualityGateResult, AIJob
-│       │   ├── providers/llm/         # Base Protocol e implementação Gemini Structured Output
-│       │   ├── prompts/copywriting/v1.py # Prompt factual anti-alucinação
-│       │   ├── pipelines/             # Orchestrator e Quality Gate
-│       │   ├── integrations/          # Clientes Medusa (snapshot) e Payload (gravação de draft)
-│       │   └── worker/                # Valkey Queue Manager e Consumer assíncrono
-│       ├── tests/test_quality_gate.py # Testes de validação anti-alucinação
-│       ├── Dockerfile                 # Multi-alvo (API ou Worker)
-│       └── requirements.txt
+│       │   ├── pipelines/             # Orchestrator e Quality Gate anti-alucinação
+│       │   ├── worker/consumer.py     # Consumidor assíncrono Valkey (`neruma:ai:queue`)
+│       │   └── prompts/copywriting/   # Prompts estruturados Gemini
+│       └── tests/test_quality_gate.py # Testes de validação de fidelidade material
 │
-└── infra/                             # Orquestração & Produção
-    ├── docker-compose.prod.yml        # Compose oficial de produção (4 redes segregadas)
-    ├── docker-compose.yml             # Compose de desenvolvimento local
-    ├── docker/                        # Dockerfiles de produção (commerce, storefront, cms, ai)
-    ├── postgres/init.sql              # Provisionamento multi-user/multi-db por menor privilégio
-    ├── seaweedfs/s3.json              # Configuração do gateway S3 SeaweedFS
-    ├── traefik/
-    │   ├── traefik.yml                # Configuração estática ACME / Let's Encrypt
-    │   └── dynamic.yml                # Middlewares HSTS, Rate Limiting, TLS e Basic Auth
-    ├── backup/
-    │   ├── backup-postgres.sh         # Dump atômico comprimido + SHA256 -> Cloudflare R2
-    │   ├── backup-storage.sh          # Sincronização S3 SeaweedFS -> Cloudflare R2
-    │   └── restore.sh                 # Validador de integridade e restauração
-    └── scripts/
-        ├── healthcheck.sh             # Diagnóstico de saúde dos 10 serviços
-        └── init-multi-postgres.sh
+└── infra/                             # Orquestração Docker & Produção
+    ├── docker-compose.prod.yml        # Compose oficial (Traefik v3, Postgres, Valkey, Typesense, SeaweedFS)
+    ├── traefik/                       # Configurações TLS, Let's Encrypt e middlewares
+    └── scripts/healthcheck.sh         # Diagnóstico automatizado dos 10 serviços
 ```
 
 ---
 
-## 3. Estado Atual dos Componentes & Arquitetura
+## 3. Principais Funcionalidades Implementadas Recentemente
 
-| Componente | Função | Tecnologia | Licença | Status |
-|---|---|---|---|---|
-| **Traefik v3** | Reverse Proxy / TLS | Traefik Alpine | MIT | Configurado com ACME, HSTS e Rate Limit |
-| **Medusa v2** | Commerce Engine | Node 20 / TypeScript | MIT (Core) | Configurado com BRL, Mercado Pago, Melhor Envio e Subscribers |
-| **Payload CMS 3.0** | Editorial Brain | Next.js / TypeScript | MIT | 6 Coleções + 3 Globais + Postgres + S3 SeaweedFS |
-| **Storefront** | Frontend de Vendas | Next.js 15 / Tailwind | MIT | SSR/ISR, Lookbooks interativos, PDP completa e Checkout |
-| **AI Worker & API** | Enriquecimento & SEO | Python 3.11 / FastAPI | Próprio | Consumidor Valkey, Quality Gate e saída estruturada Gemini |
-| **PostgreSQL 16** | Banco Relacional | PostgreSQL Alpine | Postgres License | 4 bancos isolados com usuários dedicados |
-| **Valkey 7.2** | Cache / Filas / Locks | Valkey Alpine | BSD-3-Clause | Fila `neruma:ai:queue` com locking de 24h |
-| **Typesense 27.1** | Busca Instantânea | Typesense C++ | GPL-3.0 (FOSS) | Cliente configurado com facetas no Storefront |
-| **SeaweedFS** | Object Storage S3 | SeaweedFS Go | Apache-2.0 | S3 Gateway na porta 8333 para produtos e editorial |
-| **Uptime Kuma** | Monitoramento | Node | MIT | Monitoramento de endpoints no compose |
-| **Cloudflare R2** | Backup Off-Site | S3 API Cloudflare | SaaS Externo | Scripts automatizados com retenção 7d/4w/6m |
+### A. Experiência de Produto 3D & Tema Dark Biofílico (Zenin Sound Style)
+- **Visualizador 3D Interativo (`ProductViewer3D`):**
+  - Implementado com Three.js, `@react-three/fiber` e `@react-three/drei`.
+  - Suporta órbita interativa (mouse drag e touch mobile), auto-rotação suave e iluminação ambiente/direcional calibrada para ressaltar texturas de fibras têxteis.
+  - Carregamento assíncrono via `next/dynamic` (`ssr: false`) com fallback imediato para imagem estática (garantindo LCP < 2.5s).
+  - Integrado ao modelo `luminaria-macrame-ninho.glb` (7.4 MB).
+- **PDP Imersiva (`ProductImmersivePDP`):**
+  - Seções com transições refinadas de contraste: Hero escuro (`neruma-dark`) para o visualizador 3D, contrastando com seções orgânicas e claras de storytelling e especificações técnicas.
+  - Animações ativadas por scroll (`ScrollReveal`) para blocos de materiais, dimensões (em mm/cm) e ficha do artesão.
+  - Seletor toggle entre visualização 3D e galeria estática em alta resolução.
 
----
+### B. Ciclo Completo de Compra & Carrinho
+- **Contexto de Carrinho (`CartContext` & `CartDrawer`):**
+  - Gerenciamento reativo de itens com persistência em `localStorage`.
+  - Notificação visual instantânea com abertura automática do `CartDrawer` ao clicar em "Adicionar à Sacola".
+  - Contador dinâmico no ícone de sacola do Header em tempo real.
+- **Checkout Progressivo e E-mails Transacionais:**
+  - Fluxo de checkout em 3 etapas (Identificação, Frete com Melhor Envio, Pagamento com Pix/Cartão via Mercado Pago).
+  - Módulo de e-mail transacional (`order-email.ts`) com template HTML estilizado na estética da marca e endpoint `/api/checkout/send-confirmation`.
 
-## 4. O Fluxo de Dados Ponta a Ponta ("Golden Path")
+### C. Navegação & Rotas 100% Cobertas
+- Criação de todas as páginas institucionais e comerciais pendentes:
+  - `/categorias/[handle]`: Listagem categorizada com breadcrumb e grid de produtos.
+  - `/colecoes`: Showcase das coleções autorais.
+  - `/sobre`, `/contato`, `/faq`, `/envios`, `/termos`, `/privacidade`: Todas estilizadas com design system e links funcionais no Header e Footer.
 
-### A. Fluxo de Catálogo & Enriquecimento por IA (Human-in-the-loop):
-1. Um produto é cadastrado no Medusa (manualmente ou via seed).
-2. O subscriber `apps/commerce/src/subscribers/product-created.ts` intercepta o evento `product.created`.
-3. O helper `apps/commerce/src/lib/queue.ts` calcula a chave de idempotência (`product_enrichment:prod_id:v1`) e insere o job na fila `neruma:ai:queue` no Valkey.
-4. O processo consumidor `services/ai-intel/app/worker/consumer.py` puxa o job via `BRPOPLPUSH` atômico.
-5. O `ProductIntelligenceOrchestrator`:
-   - Busca o snapshot atualizado na API do Medusa.
-   - Monta o prompt factual com diretrizes anti-alucinação.
-   - Dispara chamada estruturada para o Gemini (ou fallback determinístico).
-   - Executa o **Quality Gate**: verifica se materiais inventados foram introduzidos, valida tamanhos de SEO e calcula o *Confidence Score*.
-   - Se aprovado pelo Gate, grava um rascunho na coleção `stories` do Payload CMS com `_status: 'draft'`, autor `Neruma AI Curator` e métricas de telemetria.
-6. O curador humano revisa o texto no painel do Payload e clica em **Publicar**.
-
-### B. Fluxo de Compra e Checkout:
-1. O visitante navega pela Home ou pelos Lookbooks interativos no Next.js Storefront.
-2. Ao clicar em um hotspot no Lookbook, o componente `LookbookScene` abre o popover com dados do produto e link direto para a PDP.
-3. Na PDP (`/produto/[handle]`), o preço em BRL e as opções de frete são alimentados pelo Medusa Store API.
-4. O cliente adiciona à sacola e avança para o Checkout progressivo em 3 etapas:
-   - **Identificação:** Nome, e-mail, CPF (brasileiro).
-   - **Frete:** Consulta de CEP via adapter `Melhor Envio` com cálculo de cubagem real (`mm` e `g` convertidos para `cm` e `kg`).
-   - **Pagamento:** Pix com geração imediata de QR Code e chave Copia e Cola, ou Cartão de Crédito com parcelamento via adapter `Mercado Pago`.
-5. O pedido é confirmado e o evento `order.created` é disparado.
+### D. Compatibilidade com Ambientes Cloud e Railway
+- **Payload CMS Standalone:**
+  - Criação do servidor HTTP nativo (`apps/cms/src/server.ts`) compilado diretamente para `dist/server.js`.
+  - Implementação de Drizzle Auto-push com bypass de prompts interativos (`PAYLOAD_FORCE_DRIZZLE_PUSH=true` e `CI=true`) em ambientes sem terminal interativo.
+- **Medusa v2 Resiliente:**
+  - Detecção automática de build do Admin (`medusa-config.ts`), desabilitando o dashboard caso os assets compilados não estejam presentes para evitar crashes no boot.
+  - Binding configurado para `0.0.0.0` para exposição pública em containers.
+- **Storefront Resiliente:**
+  - Normalização inteligente de URLs (`NEXT_PUBLIC_MEDUSA_URL`, `NEXT_PUBLIC_PAYLOAD_URL`) adicionando protocolo `https://` automaticamente se omitido.
+  - `sitemap.ts` com fallback gracioso caso os backends estejam em fase de boot.
 
 ---
 
-## 5. Como Executar e Validar o Projeto
+## 4. Estado da Qualidade & Build
 
-### Pré-requisitos:
-- Docker e Docker Compose instalados.
-- Node.js >= 20 e `pnpm` >= 9.
-- Python >= 3.11.
+| Workspace | Comando de Verificação | Status |
+|---|---|---|
+| `@neruma/storefront` | `pnpm --filter @neruma/storefront typecheck` | ✅ 0 erros |
+| `@neruma/cms` | `pnpm --filter @neruma/cms build` | ✅ 0 erros (tsc) |
+| `@neruma/commerce` | `pnpm --filter @neruma/commerce exec tsc --noEmit` | ✅ 0 erros |
+| `services/ai-intel` | `pytest tests/` | ✅ Testes do Quality Gate passam |
 
-### 1. Inicialização das Variáveis:
+---
+
+## 5. Como Rodar o Projeto Localmente
+
+### Opção A: Infraestrutura Docker (Completa)
 ```bash
-cd e:\projcts\neruma
-cp .env.example .env
-```
-
-### 2. Subindo a Infraestrutura Core (Fase 1):
-```bash
+# 1. Subir serviços de banco, cache, storage e busca:
 cd infra
-docker compose -f docker-compose.prod.yml up -d postgres valkey typesense seaweedfs traefik uptime-kuma
-```
+docker compose -f docker-compose.prod.yml up -d postgres valkey typesense seaweedfs traefik
 
-### 3. Verificação de Saúde da Infraestrutura:
-```bash
-chmod +x infra/scripts/healthcheck.sh
-./infra/scripts/healthcheck.sh
-```
-
-### 4. Execução dos Testes Unitários do AI Quality Gate:
-```bash
-cd services/ai-intel
-pytest tests/
-```
-
-### 5. Seeding da Região Brasil no Medusa:
-```bash
-cd apps/commerce
+# 2. Rodar todos os apps do monorepo em modo desenvolvimento:
+cd ..
 pnpm install
-pnpm seed:brazil
+pnpm dev
+```
+
+### Opção B: Desenvolvimento Isolado do Storefront
+```bash
+cd apps/storefront
+pnpm install
+pnpm dev
+# Acesse: http://localhost:3000
+# Produto 3D: http://localhost:3000/produto/luminaria-pendente-macrame-ninho
+```
+
+### Opção C: Executando o CMS ou Commerce Isoladamente
+```bash
+# CMS:
+cd apps/cms
+pnpm build
+pnpm start # Inicia REST API na porta 3001
+
+# Commerce (Medusa v2):
+cd apps/commerce
+pnpm dev   # Inicia Medusa API na porta 9000
 ```
 
 ---
 
-## 6. Próximos Passos Recomendados para a Próxima Sessão
+## 6. Próximos Passos Sugeridos
 
-1. **Sincronização Typesense:** Criar script ou listener para indexar os produtos do Medusa diretamente na coleção `products` do Typesense no momento do seed ou atualização.
-2. **Integração de Webhooks do Mercado Pago:** Testar o recebimento de notificações de pagamento aprovado do Pix via URL pública do Traefik.
-3. **Fase 2 de Observabilidade e Marketing (quando a operação escalar):**
-   - Ativação do **listmonk** (Newsletter / Campanhas transacionais) conectado ao `listmonk_db`.
-   - Ativação do **Matomo** para rastreamento de funil de vendas sem Google Analytics.
-   - Ativação do **Chatwoot** para atendimento humanizado via WhatsApp.
-   - Painéis no Grafana com métricas do Prometheus e logs centralizados via Loki.
+1. **Sincronização Typesense em Produção:**
+   - Ativar o worker ou script de ingestão periódica que popula a coleção de busca do Typesense a partir dos produtos ativos do Medusa.
+2. **Ambiente de Homologação / Staging:**
+   - Subir instâncias conectadas no Railway ou servidor dedicado com Docker Compose.
+   - Testar o webhook de retorno Pix do Mercado Pago com URL pública segura.
+3. **Ampliação do Catálogo 3D:**
+   - Adicionar novos modelos `.glb` em `apps/storefront/public/models/` para outras luminárias ou peças esculturais da marca, aproveitando a arquitetura modular existente.
