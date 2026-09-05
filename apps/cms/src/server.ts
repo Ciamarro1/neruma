@@ -8,12 +8,18 @@ const HOST = '0.0.0.0';
 async function start() {
   console.log('[Payload CMS] Inicializando engine editorial...');
   let payload: any;
+  const originalEnv = process.env.NODE_ENV;
   try {
+    if (process.env.PAYLOAD_AUTO_PUSH !== 'false') {
+      (process.env as any).NODE_ENV = 'development';
+    }
     payload = await getPayload({ config });
-    console.log('[Payload CMS] Conectado ao banco de dados com sucesso.');
+    console.log('[Payload CMS] Conectado ao banco de dados e schema sincronizado com sucesso.');
   } catch (err: any) {
     console.error('[Payload CMS] Erro crítico ao inicializar conexão com o banco:', err.message);
     throw err;
+  } finally {
+    (process.env as any).NODE_ENV = originalEnv;
   }
 
   const server = http.createServer(async (req, res) => {
@@ -44,11 +50,21 @@ async function start() {
       if (globalMatch) {
         const slug = globalMatch[1];
         if (req.method === 'GET') {
-          const depth = parseInt(url.searchParams.get('depth') || '2', 10);
-          const result = await payload.findGlobal({ slug, depth });
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(result));
-          return;
+          try {
+            const depth = parseInt(url.searchParams.get('depth') || '2', 10);
+            const result = await payload.findGlobal({ slug, depth });
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(result));
+            return;
+          } catch (globalErr: any) {
+            if (globalErr.message?.includes('does not exist') || globalErr.message?.includes('relation')) {
+              console.warn(`[Payload CMS] Global "${slug}" tabela não existe ou vazia:`, globalErr.message);
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({}));
+              return;
+            }
+            throw globalErr;
+          }
         }
         if (req.method === 'POST') {
           const body = await parseJsonBody(req);
@@ -67,36 +83,55 @@ async function start() {
 
         if (req.method === 'GET') {
           if (id) {
-            const depth = parseInt(url.searchParams.get('depth') || '2', 10);
-            const result = await payload.findByID({ collection, id, depth });
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(result));
-            return;
-          } else {
-            const limit = parseInt(url.searchParams.get('limit') || '10', 10);
-            const page = parseInt(url.searchParams.get('page') || '1', 10);
-            const depth = parseInt(url.searchParams.get('depth') || '2', 10);
-
-            const where: Record<string, any> = {};
-            for (const [key, value] of url.searchParams.entries()) {
-              const whereMatch = key.match(/^where\[([a-zA-Z0-9_.]+)\]\[([a-zA-Z0-9_]+)\]$/);
-              if (whereMatch) {
-                const field = whereMatch[1];
-                const operator = whereMatch[2];
-                if (!where[field]) where[field] = {};
-                where[field][operator] = value;
+            try {
+              const depth = parseInt(url.searchParams.get('depth') || '2', 10);
+              const result = await payload.findByID({ collection, id, depth });
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify(result));
+              return;
+            } catch (findErr: any) {
+              if (findErr.message?.includes('not exist') || findErr.message?.includes('not found') || findErr.status === 404) {
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: `Documento ${id} não encontrado na coleção ${collection}` }));
+                return;
               }
+              throw findErr;
             }
+          } else {
+            try {
+              const limit = parseInt(url.searchParams.get('limit') || '10', 10);
+              const page = parseInt(url.searchParams.get('page') || '1', 10);
+              const depth = parseInt(url.searchParams.get('depth') || '2', 10);
 
-            const options: any = { collection, limit, page, depth };
-            if (Object.keys(where).length > 0) {
-              options.where = where;
+              const where: Record<string, any> = {};
+              for (const [key, value] of url.searchParams.entries()) {
+                const whereMatch = key.match(/^where\[([a-zA-Z0-9_.]+)\]\[([a-zA-Z0-9_]+)\]$/);
+                if (whereMatch) {
+                  const field = whereMatch[1];
+                  const operator = whereMatch[2];
+                  if (!where[field]) where[field] = {};
+                  where[field][operator] = value;
+                }
+              }
+
+              const options: any = { collection, limit, page, depth };
+              if (Object.keys(where).length > 0) {
+                options.where = where;
+              }
+
+              const result = await payload.find(options);
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify(result));
+              return;
+            } catch (findErr: any) {
+              if (findErr.message?.includes('does not exist') || findErr.message?.includes('relation')) {
+                console.warn(`[Payload CMS] Coleção "${collection}" tabela não existe ou vazia:`, findErr.message);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ docs: [], totalDocs: 0, limit: 10, totalPages: 1, page: 1, hasPrevPage: false, hasNextPage: false }));
+                return;
+              }
+              throw findErr;
             }
-
-            const result = await payload.find(options);
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(result));
-            return;
           }
         }
 

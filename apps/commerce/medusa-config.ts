@@ -1,11 +1,18 @@
 import { defineConfig, Modules } from '@medusajs/framework/utils';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 
 dotenv.config();
 
+const adminIndexCwd = path.resolve(process.cwd(), '.medusa/server/public/admin/index.html');
+const adminIndexDir = path.resolve(__dirname, '.medusa/server/public/admin/index.html');
+const hasAdminBuild = fs.existsSync(adminIndexCwd) || fs.existsSync(adminIndexDir);
+const shouldDisableAdmin = process.env.DISABLE_MEDUSA_ADMIN === 'true' || !hasAdminBuild;
+
 export default defineConfig({
   admin: {
-    disable: process.env.DISABLE_MEDUSA_ADMIN === 'true',
+    disable: shouldDisableAdmin,
   },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL || 'postgresql://medusa_user:medusa_db_secret_password_2026@postgres:5432/medusa_db',

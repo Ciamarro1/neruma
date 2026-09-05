@@ -25,7 +25,7 @@ const COLLECTIONS = [
     id: 'raizes-ancestrais',
     title: 'Coleção Raízes & Texturas',
     subtitle: 'Painéis e esculturas de parede que exploram a rudeza tátil do sisal e a nobreza do freijó.',
-    image: '/images/products/painel-aura-algodao.jpg',
+    image: '/images/products/painel-macrame-algodao.jpg',
     piecesCount: '4 painéis de grande formato',
     link: '/categorias/quadros-e-paineis',
   },
