@@ -77,6 +77,7 @@ export default buildConfig({
     pool: {
       connectionString:
         process.env.DATABASE_URI ||
+        process.env.DATABASE_URL ||
         'postgresql://payload_user:payload_db_secret_password_2026@postgres:5432/payload_db',
     },
   }),

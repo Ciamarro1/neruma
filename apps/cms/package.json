@@ -6,9 +6,9 @@
   "description": "Payload CMS 3.0 — Editorial Brain da Neruma",
   "main": "dist/index.js",
   "scripts": {
-    "build": "payload build",
-    "dev": "payload dev",
-    "start": "payload start",
+    "build": "tsc",
+    "dev": "tsc && node dist/server.js",
+    "start": "node dist/server.js",
     "generate:types": "payload generate:types",
     "generate:schema": "payload generate:schema"
   },
