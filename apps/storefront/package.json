@@ -13,6 +13,8 @@
   "dependencies": {
     "@medusajs/js-sdk": "^2.0.0",
     "@neruma/types": "workspace:*",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.428.0",
     "next": "^15.1.0",
@@ -20,6 +22,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.5.2",
+    "three": "^0.185.1",
     "typesense": "^1.8.2"
   },
   "devDependencies": {
