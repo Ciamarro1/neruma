@@ -9,9 +9,13 @@ async function start() {
   console.log('[Payload CMS] Inicializando engine editorial...');
   let payload: any;
   const originalEnv = process.env.NODE_ENV;
+  const originalCI = process.env.CI;
   try {
     if (process.env.PAYLOAD_AUTO_PUSH !== 'false') {
       (process.env as any).NODE_ENV = 'development';
+      // Force push without interactive prompts in non-TTY environments (Railway, Docker)
+      process.env.PAYLOAD_FORCE_DRIZZLE_PUSH = 'true';
+      process.env.CI = 'true';
     }
     payload = await getPayload({ config });
     console.log('[Payload CMS] Conectado ao banco de dados e schema sincronizado com sucesso.');
@@ -20,6 +24,11 @@ async function start() {
     throw err;
   } finally {
     (process.env as any).NODE_ENV = originalEnv;
+    if (originalCI === undefined) {
+      delete process.env.CI;
+    } else {
+      process.env.CI = originalCI;
+    }
   }
 
   const server = http.createServer(async (req, res) => {
