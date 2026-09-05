@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['@medusajs/js-sdk', 'nodemailer'],
+  transpilePackages: ['@neruma/types'],
   images: {
     remotePatterns: [
       {
