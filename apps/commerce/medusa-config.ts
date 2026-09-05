@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default defineConfig({
+  admin: {
+    disable: process.env.DISABLE_MEDUSA_ADMIN === 'true',
+  },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL || 'postgresql://medusa_user:medusa_db_secret_password_2026@postgres:5432/medusa_db',
     redisUrl: process.env.REDIS_URL || 'redis://valkey:6379',
