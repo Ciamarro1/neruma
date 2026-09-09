@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Search, Menu } from 'lucide-react';
+import { ShoppingBag, Search, Menu, Sparkles } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { useCart } from '../../context/CartContext';
 
@@ -42,7 +42,14 @@ export const Header: React.FC = () => {
           </div>
 
           {/* Main Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8 text-xs uppercase tracking-widest font-medium text-neruma-sand-300">
+          <nav className="hidden lg:flex items-center space-x-7 text-xs uppercase tracking-widest font-medium text-neruma-sand-300">
+            <Link
+              href="/produto/quadro-escultura-raizes-sisal"
+              className="text-neruma-terracotta-light hover:text-white transition-colors flex items-center gap-1.5 font-semibold bg-neruma-terracotta/10 px-3 py-1.5 rounded-full border border-neruma-terracotta-light/30"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-neruma-terracotta-light animate-pulse" />
+              Obra Cinematográfica
+            </Link>
             <Link
               href="/colecoes"
               className="hover:text-white transition-colors"
@@ -61,6 +68,7 @@ export const Header: React.FC = () => {
             >
               Quadros & Painéis
             </Link>
+
             <Link
               href="/categorias/luminarias-organicas"
               className="hover:text-white transition-colors"

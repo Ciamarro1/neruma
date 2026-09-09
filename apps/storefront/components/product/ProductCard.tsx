@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatBRL, formatDimensions } from '../../lib/utils/formatters';
 import { Badge } from '../ui/Badge';
-import { Box } from 'lucide-react';
+import { Box, Sparkles } from 'lucide-react';
 
 interface ProductCardProps {
   product: {
@@ -30,6 +30,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
     (metadata.sustainability?.reforestation_certified ? 'Madeira FSC' : null);
   const material = metadata.design?.materials?.[0]?.replace(/_/g, ' ') || null;
   const has3D = product.handle === 'luminaria-pendente-macrame-ninho';
+  const hasCinematic = product.handle === 'quadro-escultura-raizes-sisal';
 
   return (
     <Link href={`/produto/${product.handle}`} className="group block">
@@ -66,7 +67,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, priority = fa
             <span>3D</span>
           </div>
         )}
+
+        {/* Indicador Cinemático 1:1 */}
+        {hasCinematic && (
+          <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neruma-terracotta/90 backdrop-blur-md border border-neruma-terracotta-light text-[10px] text-white font-medium tracking-wider uppercase shadow-lg">
+            <Sparkles className="w-3 h-3 text-neruma-sand-100 animate-pulse" />
+            <span>Cinemático 1:1</span>
+          </div>
+        )}
       </div>
+
 
       <div className="space-y-1 px-1">
         {material ? (

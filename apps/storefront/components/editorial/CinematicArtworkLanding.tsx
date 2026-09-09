@@ -107,9 +107,9 @@ export function CinematicArtworkLanding({
   return (
     <div className="relative bg-[#12100E] text-neruma-sand-100 min-h-screen selection:bg-neruma-terracotta selection:text-white">
       {/* ------------------------------------------------------------- */}
-      {/* 1. Header / HUD Superior Minimalista de Galeria                */}
+      {/* 1. HUD Superior Minimalista de Galeria (Abaixo do Header)     */}
       {/* ------------------------------------------------------------- */}
-      <header className="fixed top-0 inset-x-0 z-40 px-6 py-4 flex items-center justify-between backdrop-blur-md bg-[#12100E]/70 border-b border-white/5 transition-all">
+      <div className="sticky top-20 z-30 px-6 py-3 flex items-center justify-between backdrop-blur-md bg-[#12100E]/85 border-b border-white/5 transition-all">
         <div className="flex items-center gap-3">
           <Link
             href="/produtos"
@@ -122,6 +122,7 @@ export function CinematicArtworkLanding({
             Curadoria Autoral Neruma
           </span>
         </div>
+
 
         {/* Indicador de Ato Atual */}
         <div className="flex items-center gap-2">
@@ -153,7 +154,8 @@ export function CinematicArtworkLanding({
             Adquirir Obra
           </button>
         </div>
-      </header>
+      </div>
+
 
       {/* ------------------------------------------------------------- */}
       {/* 2. Canvas Fixo de Fundo (Engine Cinematográfica 1:1)           */}
@@ -330,12 +332,13 @@ export function CinematicArtworkLanding({
       {/* ------------------------------------------------------------- */}
       {/* 4. Barra Flutuante de Curadoria (Rodapé Sutil)                 */}
       {/* ------------------------------------------------------------- */}
-      <footer className="relative z-20 py-8 px-6 text-center border-t border-white/5 bg-[#12100E] text-xs text-neruma-sand-400">
+      <div className="relative z-20 py-8 px-6 text-center border-t border-white/5 bg-[#12100E] text-xs text-neruma-sand-400">
         <p>
           {config.curator_note ||
             'Neruma — Design Orgânico, Arquitetura Biofílica & Arte Autoral.'}
         </p>
-      </footer>
+      </div>
     </div>
   );
 }
+

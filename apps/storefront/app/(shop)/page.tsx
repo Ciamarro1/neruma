@@ -51,21 +51,28 @@ export default async function HomePage() {
             Obras autorais e peças de mobiliário biofílico com visualização 3D interativa que trazem a natureza para dentro do seu lar.
           </p>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 flex-wrap">
             <Link href="/produtos">
-              <Button size="lg" className="w-full sm:w-auto bg-neruma-terracotta hover:bg-neruma-terracotta-dark text-white px-8 shadow-lg shadow-neruma-terracotta/30">
+              <Button size="lg" className="w-full sm:w-auto bg-neruma-terracotta hover:bg-neruma-terracotta-dark text-white px-7 shadow-lg shadow-neruma-terracotta/30">
                 Explorar Catálogo
               </Button>
             </Link>
+            <Link href="/produto/quadro-escultura-raizes-sisal">
+              <Button size="lg" className="w-full sm:w-auto border border-neruma-terracotta-light/60 bg-neruma-terracotta/20 hover:bg-neruma-terracotta/30 text-white flex items-center justify-center gap-2 backdrop-blur-md px-6 shadow-xl">
+                <Sparkles className="w-4 h-4 text-neruma-terracotta-light animate-pulse" />
+                Obra Cinematográfica 1:1
+              </Button>
+            </Link>
             <Link href="/produto/luminaria-pendente-macrame-ninho">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 flex items-center gap-2 backdrop-blur-md">
-                <Box className="w-4 h-4 text-neruma-terracotta-light" />
-                Experiência 3D Interativa
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 flex items-center justify-center gap-2 backdrop-blur-md px-6">
+                <Box className="w-4 h-4 text-neruma-sand-300" />
+                Luminária 3D
               </Button>
             </Link>
           </div>
         </div>
       </section>
+
 
       {/* 2. CATEGORIAS DE DESTAQUE */}
       <section>

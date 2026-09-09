@@ -64,15 +64,38 @@ export function CinematicArtworkCanvas({
     [waypoints]
   );
 
-  // Pré-carregamento da imagem original
+  // Pré-carregamento seguro da imagem original (suporte a cache instantâneo)
   useEffect(() => {
+    let isMounted = true;
     const img = new Image();
-    img.src = artworkUrl;
-    img.onload = () => {
+
+    const handleLoaded = () => {
+      if (!isMounted) return;
       imageRef.current = img;
       setImageLoaded(true);
     };
+
+    img.onload = handleLoaded;
+    img.onerror = (err) => {
+      console.error('[CinematicArtworkCanvas] Erro ao carregar imagem:', artworkUrl, err);
+      if (img.naturalWidth > 0 && isMounted) {
+        handleLoaded();
+      }
+    };
+
+    img.src = artworkUrl;
+
+    if (img.complete && img.naturalWidth > 0) {
+      handleLoaded();
+    }
+
+    return () => {
+      isMounted = false;
+      img.onload = null;
+      img.onerror = null;
+    };
   }, [artworkUrl]);
+
 
   // Loop de renderização no Canvas
   useEffect(() => {
