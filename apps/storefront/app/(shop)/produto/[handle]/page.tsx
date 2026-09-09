@@ -5,6 +5,8 @@ import { constructMetadata } from '../../../../lib/seo/metadata';
 import { formatBRL, formatDimensions, formatWeight } from '../../../../lib/utils/formatters';
 import { getProductByHandle } from '../../../../lib/medusa/products';
 import { ProductImmersivePDP } from '../../../../components/product/ProductImmersivePDP';
+import { CinematicArtworkLanding } from '../../../../components/editorial/CinematicArtworkLanding';
+import { CINEMATIC_ARTWORK_PRESETS } from '../../../../lib/cinematic/artwork-presets';
 
 interface ProductPageProps {
   params: Promise<{ handle: string }>;
@@ -46,7 +48,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // Verificar se há modelo 3D cadastrado para este produto
+  // 1. Verificar se há história cinematográfica 1:1 configurada para esta obra de arte
+  const cinematicStory = CINEMATIC_ARTWORK_PRESETS[handle] || null;
+
+  // 2. Verificar se há modelo 3D cadastrado para este produto
   const modelUrl = PRODUCT_3D_MODELS[handle] || null;
 
   const metadata: any = product.metadata || {};
@@ -85,15 +90,28 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         ]}
       />
 
-      {/* Todo o catálogo unificado no padrão Landing Page Imersiva Dark */}
-      <ProductImmersivePDP
-        product={product}
-        handle={handle}
-        modelUrl={modelUrl}
-        formattedPrice={formattedPrice}
-        formattedDimensions={formattedDimensions}
-        formattedWeight={formattedWeight}
-      />
+      {/* Roteamento inteligente: Obras de arte recebem Cinematic Canvas Landing 1:1 */}
+      {cinematicStory ? (
+        <CinematicArtworkLanding
+          config={cinematicStory}
+          product={product}
+          handle={handle}
+          formattedPrice={formattedPrice}
+          formattedDimensions={formattedDimensions}
+          formattedWeight={formattedWeight}
+        />
+      ) : (
+        /* Demais produtos do catálogo utilizam a PDP Imersiva clássica */
+        <ProductImmersivePDP
+          product={product}
+          handle={handle}
+          modelUrl={modelUrl}
+          formattedPrice={formattedPrice}
+          formattedDimensions={formattedDimensions}
+          formattedWeight={formattedWeight}
+        />
+      )}
     </>
   );
 }
+

@@ -25,12 +25,13 @@ Nesta sessão, foi resolvida a obtenção de um domínio gratuito de alto nível
 
 | Componente | Localização | Tecnologias Chave | Status |
 |---|---|---|---|
-| **Storefront** | `apps/storefront` | Next.js 15 App Router, React 19, Tailwind CSS, Three.js / R3F | ✅ Completo: PDP 3D (`luminaria-macrame-ninho.glb`), CartDrawer reativo, checkout em 3 etapas, todas as páginas institucionais e SEO dinâmico |
-| **Commerce** | `apps/commerce` | Medusa v2 API, PostgreSQL, Mercado Pago, Melhor Envio, Valkey | ✅ Completo: Adapters de pagamento/frete, scripts de seed, subscribers de produto e detecção dinâmica de build do Admin |
+| **Storefront** | `apps/storefront` | Next.js 15 App Router, React 19, Tailwind CSS, Three.js / R3F, HTML5 Canvas Scrubbing | ✅ Completo: PDP 3D R3F (`luminaria-macrame-ninho`), Cinematic Landing Canvas 1:1 em 8 atos (`quadro-escultura-raizes-sisal`), CartDrawer reativo, checkout em 3 etapas e SEO dinâmico |
+| **Commerce** | `apps/commerce` | Medusa v2 API, PostgreSQL, Mercado Pago, Melhor Envio, Valkey | ✅ Completo: Adapters de pagamento/frete, scripts de seed com BOM factual, subscribers de produto e detecção dinâmica de build do Admin |
 | **Editorial CMS** | `apps/cms` | Payload CMS 3.0, PostgreSQL, S3/SeaweedFS, Drizzle ORM | ✅ Completo: Servidor HTTP standalone nativo (`server.ts`), Drizzle auto-push não-interativo para deploy, coleções modeladas |
-| **AI Intelligence**| `services/ai-intel` | Python 3.11, FastAPI, Valkey Consumer, Gemini Prompts | ✅ Completo: Quality Gate anti-alucinação com testes de materiais/BOM passando, grava rascunhos em `_status: 'draft'` |
-| **Tipagens Base** | `packages/types` | TypeScript estrito (`strict: true`) | ✅ Completo: Contratos canônicos centralizados para comércio, editorial, logística e IA |
+| **AI Intelligence**| `services/ai-intel` | Python 3.11, FastAPI, Landing Architect, Gemini Prompts, Quality Gate | ✅ Completo: Gerador de narrativa em 8 atos e waypoints de textura, Quality Gate anti-alucinação com testes 100% passando |
+| **Tipagens Base** | `packages/types` | TypeScript estrito (`strict: true`) | ✅ Completo: Contratos canônicos centralizados para comércio, editorial, logística, IA e Cinematic Storytelling |
 | **Infraestrutura** | `infra/` | Traefik v3, Postgres, Valkey, Typesense, SeaweedFS | ✅ Completo: `docker-compose.prod.yml`, labels Traefik para SSL automático e script de healthcheck |
+
 
 ---
 

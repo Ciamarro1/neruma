@@ -54,6 +54,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-multi-postgres.sh:/docker-entrypoint-initdb.d/init-multi-postgres.sh:ro
+    ports:
+      - "5432:5432"
     networks:
       - neruma_internal
     healthcheck:
@@ -74,6 +76,8 @@ services:
     container_name: neruma_valkey
     restart: unless-stopped
     command: valkey-server --save 60 1 --loglevel warning
+    ports:
+      - "6379:6379"
     volumes:
       - valkey_data:/data
     networks:
@@ -99,6 +103,8 @@ services:
       TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:-neruma_typesense_secret_key_123}
       TYPESENSE_DATA_DIR: /data
       TYPESENSE_ENABLE_CORS: "true"
+    ports:
+      - "8108:8108"
     volumes:
       - typesense_data:/data
     networks:
@@ -125,6 +131,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-neruma_minio_admin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-neruma_minio_secret_password_123}
+    ports:
+      - "9001:9001"
     volumes:
       - minio_data:/data
     networks:
