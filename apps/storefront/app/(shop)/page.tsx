@@ -3,6 +3,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
+import { ScrollReveal } from '../../components/ui/ScrollReveal';
+import { ParallaxLayer } from '../../components/parallax/ParallaxLayer';
+import { ParallaxHero } from '../../components/parallax/ParallaxHero';
+import { Manifesto } from '../../components/parallax/Manifesto';
+import { DayJourney } from '../../components/parallax/DayJourney';
 import { ProductCard } from '../../components/product/ProductCard';
 import { LookbookScene } from '../../components/editorial/LookbookScene';
 import { getProducts } from '../../lib/medusa/products';
@@ -23,61 +28,51 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-28 pb-28 bg-[#141210] text-neruma-sand-100">
-      {/* 1. HERO EDITORIAL DARK */}
-      <section className="relative h-[90vh] min-h-[640px] flex items-center justify-center text-center overflow-hidden">
-        {/* Camada escura de imersão */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141210] via-black/60 to-black/40 z-10" />
-        <Image
-          src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
-          alt="Ambiente Orgânico com Madeira e Fibras Naturais"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center scale-105 animate-fade-in"
-        />
-
-        <div className="relative z-20 max-w-3xl px-4 text-white space-y-7">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] uppercase tracking-[0.25em] font-medium text-neruma-sand-200">
-            <Sparkles className="w-3.5 h-3.5 text-neruma-terracotta-light" />
-            Coleção Raízes 2026
-          </div>
-
-          <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1]">
+      {/* 1. HERO PARALLAX MULTI-LAYERED (estilo HEAVN One) */}
+      <ParallaxHero
+        eyebrow="Coleção Raízes 2026"
+        giantWord="NERUMA"
+        title={
+          <>
             A nobreza da madeira. <br className="hidden sm:inline" />
             A alma das fibras.
-          </h1>
+          </>
+        }
+        subtitle="Obras autorais e peças de mobiliário biofílico com visualização 3D interativa que trazem a natureza para dentro do seu lar."
+        backgroundSrc="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
+        backgroundAlt="Ambiente Orgânico com Madeira e Fibras Naturais"
+      >
+        <Link href="/produtos">
+          <Button size="lg" className="w-full sm:w-auto bg-neruma-terracotta hover:bg-neruma-terracotta-dark text-white px-7 shadow-lg shadow-neruma-terracotta/30">
+            Explorar Catálogo
+          </Button>
+        </Link>
+        <Link href="/produto/quadro-escultura-raizes-sisal">
+          <Button size="lg" className="w-full sm:w-auto border border-neruma-terracotta-light/60 bg-neruma-terracotta/20 hover:bg-neruma-terracotta/30 text-white flex items-center justify-center gap-2 backdrop-blur-md px-6 shadow-xl">
+            <Sparkles className="w-4 h-4 text-neruma-terracotta-light animate-pulse" />
+            Obra Cinematográfica 1:1
+          </Button>
+        </Link>
+        <Link href="/produto/luminaria-pendente-macrame-ninho">
+          <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 flex items-center justify-center gap-2 backdrop-blur-md px-6">
+            <Box className="w-4 h-4 text-neruma-sand-300" />
+            Luminária 3D
+          </Button>
+        </Link>
+      </ParallaxHero>
 
-          <p className="text-base sm:text-lg text-neruma-sand-200/90 max-w-xl mx-auto leading-relaxed font-light">
-            Obras autorais e peças de mobiliário biofílico com visualização 3D interativa que trazem a natureza para dentro do seu lar.
-          </p>
-
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 flex-wrap">
-            <Link href="/produtos">
-              <Button size="lg" className="w-full sm:w-auto bg-neruma-terracotta hover:bg-neruma-terracotta-dark text-white px-7 shadow-lg shadow-neruma-terracotta/30">
-                Explorar Catálogo
-              </Button>
-            </Link>
-            <Link href="/produto/quadro-escultura-raizes-sisal">
-              <Button size="lg" className="w-full sm:w-auto border border-neruma-terracotta-light/60 bg-neruma-terracotta/20 hover:bg-neruma-terracotta/30 text-white flex items-center justify-center gap-2 backdrop-blur-md px-6 shadow-xl">
-                <Sparkles className="w-4 h-4 text-neruma-terracotta-light animate-pulse" />
-                Obra Cinematográfica 1:1
-              </Button>
-            </Link>
-            <Link href="/produto/luminaria-pendente-macrame-ninho">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 flex items-center justify-center gap-2 backdrop-blur-md px-6">
-                <Box className="w-4 h-4 text-neruma-sand-300" />
-                Luminária 3D
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* 1b. MANIFESTO — tipografia gigante em camadas */}
+      <Manifesto
+        eyebrow="Design biofílico"
+        lines={['Luz que abraça.', 'Madeira que acolhe.', 'Fibra que respira.']}
+        description="Como a HEAVN traduz o ciclo do sol em luz, a Neruma traduz a mata em matéria — cada peça acompanha o ritmo do seu dia, do despertar ao recolher."
+      />
 
 
       {/* 2. CATEGORIAS DE DESTAQUE */}
       <section>
         <Container size="lg">
-          <div className="text-center max-w-2xl mx-auto mb-14">
+          <ScrollReveal className="text-center max-w-2xl mx-auto mb-14">
             <span className="text-[10px] uppercase tracking-[0.3em] text-neruma-terracotta-light font-semibold">
               Acervo Autoral
             </span>
@@ -87,7 +82,7 @@ export default async function HomePage() {
             <p className="text-sm text-neruma-sand-400/80 font-light">
               Design pensado para equilibrar estética atemporal, acolhimento e funcionalidade biofílica.
             </p>
-          </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Categoria 1 */}
@@ -180,6 +175,43 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+
+      {/* 3b. JORNADA DO DIA — storytelling fixo estilo HEAVN */}
+      <DayJourney
+        eyebrow="Seu dia com Neruma"
+        heading="A casa acompanha o ritmo do sol"
+        description="Da energia da manhã ao aconchego da noite — luz, madeira e fibra regulando bem-estar, foco e descanso."
+        moments={[
+          {
+            time: '08:00',
+            title: 'O despertar com fibras e luz',
+            text: 'Luminárias em macramê filtram a manhã como a copa das árvores: despertar suave, vitalidade e concentração para começar o dia.',
+            image: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=1200&auto=format&fit=crop',
+            imageAlt: 'Luminária orgânica pela manhã',
+          },
+          {
+            time: '12:00',
+            title: 'Foco total, sombra nenhuma',
+            text: 'Painéis em freijó organizam o olhar e a luz ampla da peça central garante trabalho sem sombras — foco linear e sem esforço.',
+            image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1200&auto=format&fit=crop',
+            imageAlt: 'Quadro e painel sob luz do meio-dia',
+          },
+          {
+            time: '18:00',
+            title: 'Fora escurece. Dentro acolhe.',
+            text: 'A luz indireta das peças elimina o efeito caverna do escritório comum: ambiência atmosférica que descansa os olhos no monitor.',
+            image: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?q=80&w=1200&auto=format&fit=crop',
+            imageAlt: 'Ambiente acolhedor ao entardecer',
+          },
+          {
+            time: '21:00',
+            title: 'Descanso e regeneração',
+            text: 'À noite, tons quentes da madeira e das fibras desaceleram o corpo e preparam o sono — a base do desempenho sustentável.',
+            image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format&fit=crop',
+            imageAlt: 'Sala em tons quentes à noite',
+          },
+        ]}
+      />
 
       {/* 4. LOOKBOOK INTERATIVO (PAYLOAD + MEDUSA HOTSPOTS) */}
       {featuredLookbook ? (
