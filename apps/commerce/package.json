@@ -5,10 +5,10 @@
   "description": "Medusa v2 Commerce Engine — Neruma",
   "main": "dist/index.js",
   "scripts": {
-    "build": "medusa build || tsc",
+    "build": "medusa build",
     "dev": "medusa develop",
-    "start": "medusa start -H 0.0.0.0",
-    "start:prod": "medusa db:migrate && medusa start -H 0.0.0.0",
+    "start": "NODE_OPTIONS=--max-old-space-size=1536 medusa start -H 0.0.0.0",
+    "start:prod": "medusa db:migrate && NODE_OPTIONS=--max-old-space-size=1536 medusa start -H 0.0.0.0",
     "seed": "medusa exec ./src/scripts/seed-brazil.ts && medusa exec ./src/scripts/seed-3-products.ts",
     "seed:brazil": "medusa exec ./src/scripts/seed-brazil.ts",
     "seed:products": "medusa exec ./src/scripts/seed-3-products.ts"

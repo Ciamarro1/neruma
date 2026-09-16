@@ -14,6 +14,7 @@
     "build:cms": "turbo run build --filter=@neruma/cms",
     "start": "echo 'Para iniciar no Railway, use o comando específico do serviço no Start Command (ex: pnpm run start:commerce)'",
     "start:commerce": "pnpm --filter @neruma/commerce start",
+    "start:commerce:prod": "pnpm --filter @neruma/commerce run start:prod",
     "migrate:commerce": "pnpm --filter @neruma/commerce exec medusa db:migrate",
     "seed:commerce": "pnpm --filter @neruma/commerce run seed",
     "start:storefront": "pnpm --filter @neruma/storefront start",
