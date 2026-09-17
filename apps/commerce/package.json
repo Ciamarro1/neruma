@@ -7,8 +7,8 @@
   "scripts": {
     "build": "medusa build",
     "dev": "medusa develop",
-    "start": "NODE_OPTIONS=--max-old-space-size=1536 medusa start -H 0.0.0.0",
-    "start:prod": "medusa db:migrate && NODE_OPTIONS=--max-old-space-size=1536 medusa start -H 0.0.0.0",
+    "start": "DISABLE_MEDUSA_ADMIN=true NODE_OPTIONS=--max-old-space-size=384 medusa start -H 0.0.0.0",
+    "start:prod": "medusa db:migrate && DISABLE_MEDUSA_ADMIN=true NODE_OPTIONS=--max-old-space-size=384 medusa start -H 0.0.0.0",
     "seed": "medusa exec ./src/scripts/seed-brazil.ts && medusa exec ./src/scripts/seed-3-products.ts",
     "seed:brazil": "medusa exec ./src/scripts/seed-brazil.ts",
     "seed:products": "medusa exec ./src/scripts/seed-3-products.ts"
